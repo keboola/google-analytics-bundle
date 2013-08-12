@@ -1,0 +1,50 @@
+{
+    "name": "keboola/google-analytics-bundle",
+    "type": "symfony-bundle",
+    "description": "Kebool GoogleAnalytics Bundle",
+    "keywords": ["keboola", "google", "analytics"],
+    "authors": [
+        {
+            "name": "Miroslav Čillík",
+            "email": "miro@keboola.com"
+        }
+    ],
+    "repositories": [
+	{
+            "type": "vcs",
+	    "url": "git@bitbucket.org:keboola/google-client-bundle.git"
+	}
+    ],
+    "require": {
+        "php": ">=5.3.5",
+		"keboola/google-client-bundle": "1.1.*",
+		"keboola/google-analytics-bundle": "1.0.*"
+    },
+    "require-dev": {
+        "syrup/component-bundle": "1.2.*",
+        "syrup/development-bundle": "1.1.*"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
+        ],
+        "post-update-cmd": [
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache"
+        ]
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-0": { "Keboola\\Google\\AnalyticsBundle": "" }
+    },
+    "target-dir": "Keboola/Google/AnalyticsBundle",
+    "extra": {
+        "symfony-app-dir": "vendor/syrup/development-bundle/app",
+        "symfony-web-dir": "vendor/syrup/development-bundle/web",
+        "incenteev-parameters": {
+            "keep-outdated": true,
+            "file": "vendor/syrup/development-bundle/app/config/parameters.yml"
+        }
+    }
+}

@@ -1,0 +1,3 @@
+keboola_google_analytics_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Default:index }

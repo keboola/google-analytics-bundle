@@ -1,0 +1,6 @@
+parameters:
+
+services:
+    google_analytics_rest_api:
+        class: Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi
+        arguments: [@google_rest_api]
