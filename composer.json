@@ -10,15 +10,14 @@
         }
     ],
     "repositories": [
-	{
+		{
             "type": "vcs",
-	    "url": "git@bitbucket.org:keboola/google-client-bundle.git"
-	}
+    		"url": "git@bitbucket.org:keboola/google-client-bundle.git"
+		}
     ],
     "require": {
         "php": ">=5.3.5",
-		"keboola/google-client-bundle": "1.1.*",
-		"keboola/google-analytics-bundle": "1.0.*"
+		"keboola/google-client-bundle": "1.1.*"
     },
     "require-dev": {
         "syrup/component-bundle": "1.2.*",
