@@ -76,6 +76,8 @@ class Extractor
 			}
 
 
+
+
 		}
 
 		return $status;

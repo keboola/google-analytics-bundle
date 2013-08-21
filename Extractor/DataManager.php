@@ -37,7 +37,7 @@ class DataManager
 		return $response;
 	}
 
-	protected function saveToCsv(array $data, $tableName, Profile $profile)
+	public function saveToCsv(array $data, $tableName, Profile $profile)
 	{
 		$file = ROOT_PATH . "/app/tmp/"
 			. str_replace(' ', '-', $tableName)
@@ -80,7 +80,7 @@ class DataManager
 		return $file;
 	}
 
-	protected function uploadCsv($file, $accountId, $tableName, $incremental=false)
+	public function uploadCsv($file, $accountId, $tableName, $incremental=false)
 	{
 		$bucketId = $this->configuration->getInBucketId($accountId);
 		$tableId = $bucketId . '.' . $tableName;

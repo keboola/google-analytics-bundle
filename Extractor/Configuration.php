@@ -71,7 +71,7 @@ class Configuration
 		$accountId = $this->getAccountId($data['googleId']);
 		$account = $this->accountFactory->get($accountId);
 		$account->fromArray($data);
-		$account->save();
+		$account->save(true);
 		$this->accounts[$accountId] = $account;
 	}
 
@@ -88,46 +88,6 @@ class Configuration
 		}
 
 		unset($this->accounts[$accountId]);
-	}
-
-	public function addSheet($params)
-	{
-		$accountId = $params['accountId'];
-		unset($params['accountId']);
-
-		$accounts = $this->getAccounts();
-		/** @var Account $account */
-		$account = $accounts[$accountId];
-
-		$exists = false;
-		foreach ($account->getSheets() as $sheet) {
-			/** @var Sheet $sheet */
-			if ($sheet->getGoogleId() == $params['googleId'] && $sheet->getSheetId() == $params['sheetId']) {
-				$exists = true;
-				break;
-			}
-		}
-
-		if (!$exists) {
-			$account->addSheet(new Sheet($params));
-			$account->save();
-		}
-	}
-
-	public function getSheets($accountId)
-	{
-		$config = $this->getConfig();
-		$account = $config['account-' . $accountId];
-		$savedFiles = $account['items'];
-
-		$result = array();
-
-		foreach($savedFiles as $savedFile) {
-			$result[$savedFile['googleId']][$savedFile['sheetId']] = $savedFile;
-			$result[$savedFile['googleId']]['fileId'] = $savedFile['fileId'];
-		}
-
-		return $result;
 	}
 
 	public function getConfig()

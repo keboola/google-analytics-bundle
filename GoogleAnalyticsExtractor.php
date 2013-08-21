@@ -96,6 +96,10 @@ class GoogleAnalyticsExtractor extends Component
 			throw new \Exception('Account already exists');
 		}
 
+		$this->_log->info("Creating account", array(
+			"params"   => $params
+		));
+
 		$this->configuration->addAccount($params);
 	}
 

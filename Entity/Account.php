@@ -188,7 +188,7 @@ class Account extends Table
 
 		$this->setFromArray($profilesArray);
 
-		parent::save($isAsync);
+		parent::save(true);
 	}
 
 	public function getInBucketId()
