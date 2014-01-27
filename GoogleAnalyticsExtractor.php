@@ -18,7 +18,7 @@ use Syrup\ComponentBundle\Component\Component;
 
 class GoogleAnalyticsExtractor extends Component
 {
-	protected $_name = 'googleAnalytics';
+	protected $_name = 'google-analytics';
 	protected $_prefix = 'ex';
 
 	/** @var Configuration */
@@ -60,10 +60,10 @@ class GoogleAnalyticsExtractor extends Component
 		$gaApi = $this->_container->get('google_analytics_rest_api');
 		$gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
 
-		$extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp());
-		$extractor->setCurrAccountId($account->getAccountId());
+		$this->extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp(), $this->_log);
+		$this->extractor->setCurrAccountId($account->getAccountId());
 
-		$gaApi->getApi()->setRefreshTokenCallback(array($extractor, 'refreshTokenCallback'));
+		$gaApi->getApi()->setRefreshTokenCallback(array($this->extractor, 'refreshTokenCallback'));
 
 		return $gaApi;
 	}
@@ -72,8 +72,8 @@ class GoogleAnalyticsExtractor extends Component
 	{
 		/** @var RestApi $googleAnalyticsApi */
 		$googleAnalyticsApi = $this->_container->get('google_analytics_rest_api');
-		$this->extractor = new Extractor($googleAnalyticsApi, $this->getConfiguration(), $this->getTemp());
-		$status = $this->extractor->run();
+		$this->extractor = new Extractor($googleAnalyticsApi, $this->getConfiguration(), $this->getTemp(), $this->_log);
+		$status = $this->extractor->run($params);
 
 		return array(
 			'import'    => $status
@@ -203,4 +203,6 @@ class GoogleAnalyticsExtractor extends Component
 
 		$this->getConfiguration()->removeProfile($params['accountId'], $params['profileId']);
 	}
+
+
 }

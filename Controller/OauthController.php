@@ -69,7 +69,7 @@ class OauthController extends BaseController
 		$googleApi = $this->getGoogleApi();
 
 		try {
-			$client = new StorageApi($this->getRequest()->request->get('token'), null, 'ex-googleAnalytics');
+			$client = new StorageApi($this->getRequest()->request->get('token'), null, 'ex-google-analytics');
 
 			$url = $googleApi->getAuthorizationUrl(
 				$this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL),
@@ -110,12 +110,12 @@ class OauthController extends BaseController
 		}
 
 		try {
-			$storageApi = new StorageApi($token, null, 'ex-googleAnalytics');
+			$storageApi = new StorageApi($token, null, 'ex-google-analytics');
 
 			/** @var EncryptorInterface $encryptor */
 			$encryptor = $this->get('syrup.encryptor');
 
-			$configuration = new Configuration($storageApi, 'ex-googleAnalytics', $encryptor);
+			$configuration = new Configuration($storageApi, 'ex-google-analytics', $encryptor);
 
 			$tokens = $googleApi->authorize($code, $this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL));
 

@@ -13,6 +13,7 @@ use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
+use Monolog\Logger;
 use Syrup\ComponentBundle\Filesystem\TempService;
 
 class Extractor
@@ -31,7 +32,10 @@ class Extractor
 	/** @var TempService */
 	protected $temp;
 
-	public function __construct(RestApi $gaApi, $configuration, TempService $temp)
+	/** @var Logger */
+	protected $logger;
+
+	public function __construct(RestApi $gaApi, $configuration, TempService $temp, Logger $logger)
 	{
 		$this->gaApi = $gaApi;
 		$this->configuration = $configuration;
@@ -48,12 +52,23 @@ class Extractor
 		$dateTo = isset($options['until'])?date('Y-m-d', $options['until']):date('Y-m-d', strtotime('-1 day'));
 		$dataset = isset($options['dataset'])?$options['dataset']:null;
 
+		if (isset($options['account'])) {
+			if (isset($accounts[$options['account']])) {
+				$accounts = array(
+					$options['account'] => $accounts[$options['account']]
+				);
+			}
+		}
+
 		/** @var Account $account */
 		foreach ($accounts as $accountId => $account) {
 
 			$this->currAccountId = $accountId;
 
+			$this->configuration->initDataBucket($account->getAccountId());
+
 			$this->gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
+			$this->gaApi->getApi()->setRefreshTokenCallback(array($this, 'refreshTokenCallback'));
 
 			$tmpFileInfo = $this->temp->createFile("profiles-" . $accountId . "-" . microtime() . ".csv");
 			$profilesCsv = new CsvFile($tmpFileInfo->getPathname());
@@ -82,12 +97,14 @@ class Extractor
 						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
 					} catch (\Exception $e) {
 						$status[$accountId][$profile->getName()][$tableName] = array('error' => $e->getMessage());
+						$this->logger->warn("Import warning", array(
+							'account'   => $account->getAccountId(),
+							'profile'   => $profile->getProfileId(),
+							'exception' => $e
+						));
 					}
 				}
 			}
-
-
-
 
 		}
 
@@ -119,7 +136,13 @@ class Extractor
 		$filters = (isset($cfg['filters'][0]))?$cfg['filters'][0]:null;
 
 		$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'], $filters, $dateFrom, $dateTo);
-		$this->dataManager->save($resultSet, $tableName, $account->getAccountId(), $profile);
+
+		if (empty($resultSet)) {
+			return;
+		}
+
+		$csv = $this->getOutputCsv($tableName, $profile);
+		$this->dataManager->saveToCsv($resultSet, $tableName, $profile, $csv);
 
 		// Paging
 		$params = $this->gaApi->getDataParameters();
@@ -132,9 +155,12 @@ class Extractor
 
 				$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'],
 					$filters, $dateFrom, $dateTo, 'ga:date', $start, $params['itemsPerPage']);
-				$this->dataManager->save($resultSet, $tableName, $account->getAccountId(), $profile);
+
+				$this->dataManager->saveToCsv($resultSet, $tableName, $profile, $csv);
 			}
 		}
+
+		$this->dataManager->uploadCsv($csv->getPathname(), $account->getAccountId(), $tableName, true);
 	}
 
 	public function setCurrAccountId($id)
@@ -155,4 +181,16 @@ class Extractor
 		$account->save();
 	}
 
+	protected function getOutputCsv($tableName, Profile $profile)
+	{
+		$fileName = str_replace(' ', '-', $tableName)
+			. '-' . str_replace('/', '', $profile->getName())
+			. "-" . microtime()
+			. "-" . uniqid("", true)
+			. ".csv";
+
+		$tmpFileInfo = $this->temp->createFile($fileName);
+
+		return new CsvFile($tmpFileInfo->getPathname());
+	}
 }

@@ -29,30 +29,8 @@ class DataManager
 		$this->temp = $temp;
 	}
 
-	public function save($data, $tableName, $accountId, Profile $profile)
+	public function saveToCsv(array $data, $tableName, Profile $profile, CsvFile $csv)
 	{
-		$response = null;
-
-		if (!empty($data)) {
-			$this->configuration->initDataBucket($accountId);
-			$csvFile = $this->saveToCsv($data, $tableName, $profile);
-			$response = $this->uploadCsv($csvFile, $accountId, $tableName, true);
-		}
-
-		return $response;
-	}
-
-	public function saveToCsv(array $data, $tableName, Profile $profile)
-	{
-		$fileName = str_replace(' ', '-', $tableName)
-			. '-' . str_replace('/', '', $profile->getName())
-			. "-" . microtime()
-			. "-" . uniqid("", true)
-			. ".csv";
-
-		$tmpFileInfo = $this->temp->createFile($fileName);
-		$csv = new CsvFile($tmpFileInfo->getPathname());
-
 		$cnt = 0;
 		/** @var Result $result */
 		foreach ($data as $result) {
@@ -81,8 +59,6 @@ class DataManager
 			$csv->writeRow($outRow);
 			$cnt++;
 		}
-
-		return $tmpFileInfo->getPathname();
 	}
 
 	public function uploadCsv($file, $accountId, $tableName, $incremental=false)
