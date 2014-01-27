@@ -13,6 +13,7 @@ use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
+use Syrup\ComponentBundle\Filesystem\TempService;
 
 class Extractor
 {
@@ -25,11 +26,17 @@ class Extractor
 	/** @var DataManager */
 	protected $dataManager;
 
-	public function __construct(RestApi $gaApi, $configuration)
+	protected $currAccountId;
+
+	/** @var TempService */
+	protected $temp;
+
+	public function __construct(RestApi $gaApi, $configuration, TempService $temp)
 	{
 		$this->gaApi = $gaApi;
 		$this->configuration = $configuration;
-		$this->dataManager = new DataManager($configuration);
+		$this->temp = $temp;
+		$this->dataManager = new DataManager($configuration, $this->temp);
 	}
 
 	public function run($options = null)
@@ -43,9 +50,13 @@ class Extractor
 
 		/** @var Account $account */
 		foreach ($accounts as $accountId => $account) {
+
+			$this->currAccountId = $accountId;
+
 			$this->gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
 
-			$profilesCsv = new CsvFile(ROOT_PATH . "/app/tmp/profiles-" . microtime() . ".csv");
+			$tmpFileInfo = $this->temp->createFile("profiles-" . $accountId . "-" . microtime() . ".csv");
+			$profilesCsv = new CsvFile($tmpFileInfo->getPathname());
 
 			/** @var Profile $profile */
 			foreach ($account->getProfiles() as $profile) {
@@ -124,6 +135,24 @@ class Extractor
 				$this->dataManager->save($resultSet, $tableName, $account->getAccountId(), $profile);
 			}
 		}
+	}
+
+	public function setCurrAccountId($id)
+	{
+		$this->currAccountId = $id;
+	}
+
+	public function getCurrAccountId()
+	{
+		return $this->currAccountId;
+	}
+
+	public function refreshTokenCallback($accessToken, $refreshToken)
+	{
+		$account = $this->configuration->getAccountBy('accountId', $this->currAccountId);
+		$account->setAccessToken($accessToken);
+		$account->setRefreshToken($refreshToken);
+		$account->save();
 	}
 
 }

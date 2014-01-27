@@ -9,7 +9,9 @@
 namespace Keboola\Google\AnalyticsBundle\Exception;
 
 
-class ConfigurationException
+use Syrup\ComponentBundle\Exception\SyrupComponentException;
+
+class ConfigurationException extends SyrupComponentException
 {
 	public function __construct($message)
 	{

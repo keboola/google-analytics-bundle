@@ -8,9 +8,11 @@
 
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
+use Keboola\Encryption\EncryptorInterface;
 use Keboola\Google\AnalyticsBundle\Entity\AccountFactory;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
+use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
 use Keboola\StorageApi\Client as StorageApi;
 use Keboola\StorageApi\Config\Reader;
 use Keboola\StorageApi\Table;
@@ -31,12 +33,22 @@ class Configuration
 	/** @var AccountFactory */
 	protected $accountFactory;
 
-	public function __construct(StorageApi $storageApi, $componentName)
+	/** @var EncryptorInterface */
+	protected $encryptor;
+
+	public function __construct(StorageApi $storageApi, $componentName, EncryptorInterface $encryptor)
 	{
 		$this->storageApi = $storageApi;
 		$this->componentName = $componentName;
+		$this->encryptor = $encryptor;
+
 		$this->accountFactory = new AccountFactory($this);
 		$this->accounts = $this->getAccounts();
+	}
+
+	public function getEncryptor()
+	{
+		return $this->encryptor;
 	}
 
 	public function getStorageApi()
@@ -63,16 +75,18 @@ class Configuration
 
 	/**
 	 * Add new account
-	 *
 	 * @param $data
+	 * @return \Keboola\Google\AnalyticsBundle\Entity\Account
 	 */
 	public function addAccount($data)
 	{
-		$accountId = $this->getAccountId($data['googleId']);
-		$account = $this->accountFactory->get($accountId);
+		$data['id'] = $this->getIdFromName($data['accountName']);
+		$account = $this->accountFactory->get($data['id']);
 		$account->fromArray($data);
 		$account->save(true);
-		$this->accounts[$accountId] = $account;
+		$this->accounts[$data['id']] = $account;
+
+		return $account;
 	}
 
 	/**
@@ -82,7 +96,7 @@ class Configuration
 	 */
 	public function removeAccount($accountId)
 	{
-		$tableId = $this->getSysBucketId() . '.account-' . $accountId;
+		$tableId = $this->getSysBucketId() . '.' . $accountId;
 		if ($this->storageApi->tableExists($tableId)) {
 			$this->storageApi->dropTable($tableId);
 		}
@@ -113,7 +127,7 @@ class Configuration
 		} else if ($this->storageApi->bucketExists('sys.' . $this->componentName)) {
 			return 'sys.' . $this->componentName;
 		}
-		throw new \Exception("SYS bucket don't exists");
+		throw new ConfigurationException("SYS bucket don't exists");
 	}
 
 	public function getInBucketId($accountId)
@@ -128,8 +142,7 @@ class Configuration
 	public function getAccounts($asArray = false)
 	{
 		$accounts = array();
-		foreach ($this->getConfig() as $k => $v) {
-			$accountId = str_replace('account-', '', $k);
+		foreach ($this->getConfig() as $accountId => $v) {
 			$account = $this->accountFactory->get($accountId);
 			$account->fromArray($v);
 			if ($asArray) {
@@ -159,24 +172,29 @@ class Configuration
 		return null;
 	}
 
-	private function getAccountId($googleId)
-	{
-		$accountId = 0;
-		/** @var Account $v */
-		foreach($this->getAccounts() as $k => $v) {
-			if ($v->getGoogleId() == $googleId) {
-				$accountId = $k;
-				break;
-			}
-			if ($k >= $accountId) {
-				$accountId = $k+1;
-			}
-		}
+//	private function getAccountId($googleId)
+//	{
+//		$accountId = 0;
+//		/** @var Account $v */
+//		foreach($this->getAccounts() as $k => $v) {
+//			if ($v->getGoogleId() == $googleId) {
+//				$accountId = $k;
+//				break;
+//			}
+//			if ($k >= $accountId) {
+//				$accountId = $k+1;
+//			}
+//		}
+//
+//		return $accountId;
+//	}
 
-		return $accountId;
+	private function getIdFromName($name)
+	{
+		return strtolower(Table::removeSpecialChars($name));
 	}
 
-	public function addProfile($params, $accountId)
+	public function addProfile($accountId, array $data)
 	{
 		$accounts = $this->getAccounts();
 		/** @var Account $account */
@@ -185,14 +203,14 @@ class Configuration
 		$exists = false;
 		foreach ($account->getProfiles() as $profile) {
 			/** @var Profile $profile */
-			if ($profile->getProfileId() == $params['googleId']) {
+			if ($profile->getGoogleId() == $data['googleId']) {
 				$exists = true;
 				break;
 			}
 		}
 
 		if (!$exists) {
-			$account->addProfile(new Profile($params));
+			$account->addProfile(new Profile($data));
 			$account->save();
 		}
 	}

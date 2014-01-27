@@ -1,3 +1,60 @@
-keboola_google_analytics_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Default:index }
+#keboola_google_analytics_homepage:
+#    pattern:  /hello/{name}
+#    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Default:index }
+
+
+# OAuth
+keboola_google_analytics_oauth:
+    path: /oauth
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:oauth }
+    methods:  [POST]
+
+keboola_google_analytics_oauth_callback:
+    path: /oauth-callback
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:oauthCallback }
+
+
+# Config
+keboola_google_analytics_get_configs:
+    path: /configs
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getConfigs }
+    methods:  [GET]
+
+keboola_google_analytics_post_configs:
+    path: /configs
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postConfigs }
+    methods:  [POST]
+
+keboola_google_analytics_delete_configs:
+    path: /configs/{id}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:deleteConfig }
+    methods:  [DELETE]
+
+
+# Account
+keboola_google_analytics_get_accounts:
+    path: /accounts
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getAccounts }
+    methods:  [GET]
+
+keboola_google_analytics_get_account:
+    path: /account/{id}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getAccount }
+    methods:  [GET]
+
+keboola_google_analytics_post_account:
+    path: /account/{id}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postAccount }
+    methods:  [POST]
+
+
+# Profiles
+keboola_google_analytics_get_profiles:
+    path: /profiles/{accountId}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getProfiles }
+    methods:  [GET]
+
+keboola_google_analytics_post_profiles:
+    path: /profiles/{accountId}
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postProfiles }
+    methods:  [POST]

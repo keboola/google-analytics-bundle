@@ -13,15 +13,20 @@ use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\Result;
 use Keboola\StorageApi\Table;
+use Syrup\ComponentBundle\Filesystem\TempService;
 
 class DataManager
 {
 	/** @var Configuration */
 	protected $configuration;
 
-	public function __construct(Configuration $configuration)
+	/** @var TempService */
+	protected $temp;
+
+	public function __construct(Configuration $configuration, TempService $temp)
 	{
 		$this->configuration = $configuration;
+		$this->temp = $temp;
 	}
 
 	public function save($data, $tableName, $accountId, Profile $profile)
@@ -39,14 +44,14 @@ class DataManager
 
 	public function saveToCsv(array $data, $tableName, Profile $profile)
 	{
-		$file = ROOT_PATH . "/app/tmp/"
-			. str_replace(' ', '-', $tableName)
+		$fileName = str_replace(' ', '-', $tableName)
 			. '-' . str_replace('/', '', $profile->getName())
 			. "-" . microtime()
 			. "-" . uniqid("", true)
 			. ".csv";
 
-		$csv = new CsvFile($file);
+		$tmpFileInfo = $this->temp->createFile($fileName);
+		$csv = new CsvFile($tmpFileInfo->getPathname());
 
 		$cnt = 0;
 		/** @var Result $result */
@@ -77,7 +82,7 @@ class DataManager
 			$cnt++;
 		}
 
-		return $file;
+		return $tmpFileInfo->getPathname();
 	}
 
 	public function uploadCsv($file, $accountId, $tableName, $incremental=false)

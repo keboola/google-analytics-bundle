@@ -8,14 +8,13 @@
 
 namespace Keboola\Google\AnalyticsBundle;
 
-use Guzzle\Http\Message\Response;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
+use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
 use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Keboola\Google\AnalyticsBundle\Extractor\Extractor;
 use Syrup\ComponentBundle\Component\Component;
-use Keboola\StorageApi\Client;
 
 class GoogleAnalyticsExtractor extends Component
 {
@@ -28,10 +27,16 @@ class GoogleAnalyticsExtractor extends Component
 	/** @var Extractor */
 	protected $extractor;
 
-	public function __construct(Client $storageApi, $log)
+	protected function getConfiguration()
 	{
-		$this->configuration = new Configuration($storageApi, $this->getFullName());
-		parent::__construct($storageApi, $log);
+		if ($this->configuration == null) {
+			$this->configuration = new Configuration(
+				$this->_storageApi,
+				$this->getFullName(),
+				$this->_container->get('syrup.encryptor')
+			);
+		}
+		return $this->configuration;
 	}
 
 	protected function checkParams($required, $params)
@@ -43,11 +48,31 @@ class GoogleAnalyticsExtractor extends Component
 		}
 	}
 
+	/**
+	 * @param Entity\Account $account
+	 * @internal param $accessToken
+	 * @internal param $refreshToken
+	 * @return RestApi
+	 */
+	protected function getApi(Account $account)
+	{
+		/** @var RestApi $gaApi */
+		$gaApi = $this->_container->get('google_analytics_rest_api');
+		$gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
+
+		$extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp());
+		$extractor->setCurrAccountId($account->getAccountId());
+
+		$gaApi->getApi()->setRefreshTokenCallback(array($extractor, 'refreshTokenCallback'));
+
+		return $gaApi;
+	}
+
 	public function postRun($params)
 	{
 		/** @var RestApi $googleAnalyticsApi */
 		$googleAnalyticsApi = $this->_container->get('google_analytics_rest_api');
-		$this->extractor = new Extractor($googleAnalyticsApi, $this->configuration);
+		$this->extractor = new Extractor($googleAnalyticsApi, $this->getConfiguration(), $this->getTemp());
 		$status = $this->extractor->run();
 
 		return array(
@@ -55,106 +80,118 @@ class GoogleAnalyticsExtractor extends Component
 		);
 	}
 
-	public function getAccount($params)
+	public function getConfigs()
 	{
-		$this->checkParams(array('accountId'), $params);
+		$accounts = $this->getConfiguration()->getAccounts(true);
 
-		$account = $this->configuration->getAccountBy('accountId', $params['accountId'], true);
+		$res = array();
+		foreach ($accounts as $account) {
+			$res[] = array_intersect_key($account, array_fill_keys(array('id', 'name', 'description'), 0));
+		}
 
-		return array(
-			'account' => $account
-		);
+		return $res;
 	}
 
-	public function getAccounts($params)
+	public function postConfigs($params)
 	{
-		$accounts = $this->configuration->getAccounts(true);
-
-		return array(
-			'accounts'  => $accounts
+		$this->checkParams(
+			array(
+				'name'
+			),
+			$params
 		);
+
+		try {
+			$this->getConfiguration()->exists();
+		} catch (ConfigurationException $e) {
+			$this->configuration->create();
+		}
+
+		$params['accountName'] = $params['name'];
+		unset($params['name']);
+
+		if (null != $this->getConfiguration()->getAccountBy('accountName', $params['accountName'])) {
+			throw new ConfigurationException('Account already exists');
+		}
+
+		return $this->getConfiguration()->addAccount($params);
+	}
+
+	public function deleteConfig($id)
+	{
+		$this->getConfiguration()->removeAccount($id);
+	}
+
+	public function getAccount($id)
+	{
+		return $this->getConfiguration()->getAccountBy('accountId', $id, true);
+	}
+
+	public function getAccounts()
+	{
+		return $this->getConfiguration()->getAccounts(true);
 	}
 
 	public function postAccount($params)
 	{
-		$this->checkParams(
-			array(
-				'googleId',
-				'name',
-				'email',
-				'accessToken',
-				'refreshToken'
-			),
-			$params
-		);
-
-		if (!$this->configuration->exists()) {
-			$this->configuration->create();
+		$account = $this->getConfiguration()->getAccountBy('accountId', $params['id']);
+		if (null == $account) {
+			throw new ConfigurationException("Account doesn't exist");
 		}
 
-		if (null != $this->configuration->getAccountBy('googleId', $params['googleId'])) {
-			throw new \Exception('Account already exists');
+		if (isset($params['googleId'])) {
+			$account->setGoogleId($params['googleId']);
+		}
+		if (isset($params['googleName'])) {
+		}
+		if (isset($params['googleName'])) {
+			$account->setGoogleName($params['googleName']);
+		}
+		if (isset($params['email'])) {
+			$account->setEmail($params['email']);
+		}
+		if (isset($params['accessToken'])) {
+			$account->setAccessToken($params['accessToken']);
+		}
+		if (isset($params['refreshToken'])) {
+			$account->setRefreshToken($params['refreshToken']);
+		}
+		if (isset($params['configuration'])) {
+			$account->setConfiguration($params['configuration']);
 		}
 
-		$this->_log->info("Creating account", array(
-			"params"   => $params
-		));
+		$account->save();
 
-		$this->configuration->addAccount($params);
+		return $account;
 	}
 
-	public function deleteAccount($params)
+	public function getProfiles($accountId)
 	{
-		$this->checkParams(
-			array(
-				'accountId'
-			),
-			$params
-		);
-
-		$this->configuration->removeAccount($params['accountId']);
-	}
-
-	public function getProfiles($params)
-	{
-		$this->checkParams(array(
-			'accountId'
-		), $params);
-
-		/** @var RestApi $googleAnalyticsApi */
-		$googleAnalyticsApi = $this->_container->get('google_analytics_rest_api');
-
 		/** @var Account $account */
-		$account = $this->configuration->getAccountBy('accountId', $params['accountId']);
+		$account = $this->getConfiguration()->getAccountBy('accountId', $accountId);
 
-		$googleAnalyticsApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
-
-		$profiles = $googleAnalyticsApi->getAllProfiles();
-
-		return array(
-			'profiles' => $profiles
-		);
+		return $this->getApi($account)->getAllProfiles();
 	}
 
 	/**
-	 * @param $params
-	 * @throws Exception\ParameterMissingException
+	 * @param $accountId
+	 * @param $profiles
+	 * @return array
 	 */
-	public function postProfiles($params)
+	public function postProfiles($accountId, $profiles)
 	{
-		$this->checkParams(array(
-			'accountId',
-			'profiles'
-		), $params);
+		foreach ($profiles as $profile) {
+			$this->checkParams(array(
+				'name',
+				'googleId',
+				'webPropertyId',
+				'accountId' // Accounts Google ID
+			), $profile);
 
-		if (!is_array($params['profiles'])) {
-			throw new ParameterMissingException("Parameter profiles must be an array");
+			$this->getConfiguration()->addProfile($accountId, $profile);
 		}
 
-		foreach ($params['profiles'] as $profile) {
-			//@todo check params of profile
-			$this->configuration->addProfile($profile, $params['accountId']);
-		}
+		return array("status" => "ok");
 	}
 
 	public function deleteProfiles($params)
@@ -164,6 +201,6 @@ class GoogleAnalyticsExtractor extends Component
 			'profileId'
 		), $params);
 
-		$this->configuration->removeProfile($params['accountId'], $params['profileId']);
+		$this->getConfiguration()->removeProfile($params['accountId'], $params['profileId']);
 	}
 }

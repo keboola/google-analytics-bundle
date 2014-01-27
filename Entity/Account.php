@@ -30,7 +30,28 @@ class Account extends Table
 		$sysBucket = $this->configuration->getSysBucketId();
 		$this->accountId = $accountId;
 
-		parent::__construct($storageApi, $sysBucket . '.account-' . $accountId);
+		parent::__construct($storageApi, $sysBucket . '.' . $accountId);
+	}
+
+	public function getAttribute($key)
+	{
+		if (isset($this->_attributes[$key])) {
+			return $this->_attributes[$key];
+		}
+		return null;
+	}
+
+	public function setId($id)
+	{
+		$this->setAccountId($id);
+	}
+
+	public function setAccountId($id)
+	{
+		$this->setAttribute('id', $id);
+		$this->accountId = $id;
+
+		return $this;
 	}
 
 	public function getAccountId()
@@ -62,35 +83,72 @@ class Account extends Table
 
 	public function setAccountName($name)
 	{
-		$this->setAttribute('name', $name);
+		$this->setAttribute('accountName', $name);
 		return $this;
 	}
 
 	public function getAccountName()
 	{
-		return $this->getAttribute('name');
+		return $this->getAttribute('accountName');
+	}
+
+	public function setDescription($desc)
+	{
+		$this->setAttribute('description', $desc);
+		return $this;
+	}
+
+	public function getDescription()
+	{
+		return $this->getAttribute('description');
+	}
+
+	public function setGoogleName($name)
+	{
+		$this->setAttribute('googleName', $name);
+		return $this;
+	}
+
+	public function getGoogleName()
+	{
+		return $this->getAttribute('googleName');
 	}
 
 	public function setAccessToken($accessToken)
 	{
-		$this->setAttribute('accessToken', $accessToken);
+		try {
+			$this->setAttribute('accessToken', $this->configuration->getEncryptor()->encrypt($accessToken));
+		} catch (\Exception $e) {
+		}
 		return $this;
 	}
 
 	public function getAccessToken()
 	{
-		return $this->getAttribute('accessToken');
+		try {
+			return $this->configuration->getEncryptor()->decrypt($this->getAttribute('accessToken'));
+		} catch (\Exception $e) {
+			return null;
+		}
+
 	}
 
 	public function setRefreshToken($refreshToken)
 	{
-		$this->setAttribute('refreshToken', $refreshToken);
+		try {
+			$this->setAttribute('refreshToken', $this->configuration->getEncryptor()->encrypt($refreshToken));
+		} catch (\Exception $e) {
+		}
 		return $this;
 	}
 
 	public function getRefreshToken()
 	{
-		return $this->getAttribute('refreshToken');
+		try {
+			return $this->configuration->getEncryptor()->decrypt($this->getAttribute('refreshToken'));
+		} catch (\Exception $e) {
+			return null;
+		}
 	}
 
 	/**
