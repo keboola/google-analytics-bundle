@@ -15,6 +15,7 @@ use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Keboola\Google\AnalyticsBundle\Extractor\Extractor;
 use Syrup\ComponentBundle\Component\Component;
+use Syrup\ComponentBundle\Exception\UserException;
 
 class GoogleAnalyticsExtractor extends Component
 {
@@ -27,6 +28,9 @@ class GoogleAnalyticsExtractor extends Component
 	/** @var Extractor */
 	protected $extractor;
 
+	/**
+	 * @return Configuration
+	 */
 	protected function getConfiguration()
 	{
 		if ($this->configuration == null) {
@@ -39,6 +43,11 @@ class GoogleAnalyticsExtractor extends Component
 		return $this->configuration;
 	}
 
+	/**
+	 * @param $required
+	 * @param $params
+	 * @throws Exception\ParameterMissingException
+	 */
 	protected function checkParams($required, $params)
 	{
 		foreach ($required as $r) {
@@ -68,6 +77,10 @@ class GoogleAnalyticsExtractor extends Component
 		return $gaApi;
 	}
 
+	/**
+	 * @param null $params
+	 * @return array|mixed
+	 */
 	public function postRun($params)
 	{
 		/** @var RestApi $googleAnalyticsApi */
@@ -80,6 +93,9 @@ class GoogleAnalyticsExtractor extends Component
 		);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getConfigs()
 	{
 		$accounts = $this->getConfiguration()->getAccounts(true);
@@ -96,6 +112,11 @@ class GoogleAnalyticsExtractor extends Component
 		return $res;
 	}
 
+	/**
+	 * @param $params
+	 * @return Account
+	 * @throws Exception\ConfigurationException
+	 */
 	public function postConfigs($params)
 	{
 		$this->checkParams(
@@ -121,26 +142,41 @@ class GoogleAnalyticsExtractor extends Component
 		return $this->getConfiguration()->addAccount($params);
 	}
 
+	/**
+	 * @param $id
+	 */
 	public function deleteConfig($id)
 	{
 		$this->getConfiguration()->removeAccount($id);
 	}
 
+	/**
+	 * @param $id
+	 * @return array|Account|null
+	 */
 	public function getAccount($id)
 	{
 		return $this->getConfiguration()->getAccountBy('accountId', $id, true);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getAccounts()
 	{
 		return $this->getConfiguration()->getAccounts(true);
 	}
 
+	/**
+	 * @param $params
+	 * @return array|Account|null
+	 * @throws \Syrup\ComponentBundle\Exception\UserException
+	 */
 	public function postAccount($params)
 	{
 		$account = $this->getConfiguration()->getAccountBy('accountId', $params['id']);
 		if (null == $account) {
-			throw new ConfigurationException("Account doesn't exist");
+			throw new UserException("Account '" . $params['id'] . "' not found");
 		}
 
 		if (isset($params['googleId'])) {
@@ -169,10 +205,19 @@ class GoogleAnalyticsExtractor extends Component
 		return $account;
 	}
 
+	/**
+	 * @param $accountId
+	 * @return array
+	 * @throws \Syrup\ComponentBundle\Exception\UserException
+	 */
 	public function getProfiles($accountId)
 	{
 		/** @var Account $account */
 		$account = $this->getConfiguration()->getAccountBy('accountId', $accountId);
+
+		if (null == $account) {
+			throw new UserException("Account '".$accountId."' not found");
+		}
 
 		return $this->getApi($account)->getAllProfiles();
 	}
@@ -180,10 +225,17 @@ class GoogleAnalyticsExtractor extends Component
 	/**
 	 * @param $accountId
 	 * @param $profiles
+	 * @throws \Syrup\ComponentBundle\Exception\UserException
 	 * @return array
 	 */
 	public function postProfiles($accountId, $profiles)
 	{
+		$account = $this->configuration->getSysBucketId('accountId', $accountId);
+
+		if (null == $account) {
+			throw new UserException("Account '".$accountId."' not found");
+		}
+
 		foreach ($profiles as $profile) {
 			$this->checkParams(array(
 				'name',
@@ -198,6 +250,9 @@ class GoogleAnalyticsExtractor extends Component
 		return array("status" => "ok");
 	}
 
+	/**
+	 * @param $params
+	 */
 	public function deleteProfiles($params)
 	{
 		$this->checkParams(array(

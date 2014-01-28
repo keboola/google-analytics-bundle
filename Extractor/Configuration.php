@@ -194,12 +194,8 @@ class Configuration
 		return strtolower(Table::removeSpecialChars($name));
 	}
 
-	public function addProfile($accountId, array $data)
+	public function addProfile(Account $account, array $data)
 	{
-		$accounts = $this->getAccounts();
-		/** @var Account $account */
-		$account = $accounts[$accountId];
-
 		$exists = false;
 		foreach ($account->getProfiles() as $profile) {
 			/** @var Profile $profile */

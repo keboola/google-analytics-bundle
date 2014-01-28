@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Syrup\ComponentBundle\Controller\ApiController;
+use Syrup\ComponentBundle\Exception\UserException;
 
 class GoogleAnalyticsController extends ApiController
 {
@@ -45,7 +46,13 @@ class GoogleAnalyticsController extends ApiController
 
 	public function getAccountAction($id)
 	{
-		return $this->createJsonResponse($this->getComponent()->getAccount($id));
+		$account = $this->getComponent()->getAccount($id);
+
+		if ($account == null) {
+			throw new UserException("Account '" . $id . "' not found");
+		}
+
+		return $this->createJsonResponse($account);
 	}
 
 	public function getAccountsAction()
