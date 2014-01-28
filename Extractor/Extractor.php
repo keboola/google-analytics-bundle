@@ -11,6 +11,7 @@ namespace Keboola\Google\AnalyticsBundle\Extractor;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
+use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Monolog\Logger;
@@ -66,7 +67,13 @@ class Extractor
 
 			$this->currAccountId = $accountId;
 
-			$this->configuration->initDataBucket($account->getAccountId());
+			if (null == $account->getAttribute('outputBucket')) {
+				$this->configuration->initDataBucket($account->getAccountId());
+			} else {
+				if (!$this->configuration->getStorageApi()->bucketExists($account->getAttribute('outputBucket'))) {
+					throw new ConfigurationException("Output bucket '".$account->getAttribute('outputBucket')."' doesn't exist.");
+				}
+			}
 
 			$this->gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
 			$this->gaApi->getApi()->setRefreshTokenCallback(array($this, 'refreshTokenCallback'));
