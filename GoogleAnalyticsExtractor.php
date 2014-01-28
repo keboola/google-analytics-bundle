@@ -86,7 +86,11 @@ class GoogleAnalyticsExtractor extends Component
 
 		$res = array();
 		foreach ($accounts as $account) {
-			$res[] = array_intersect_key($account, array_fill_keys(array('id', 'name', 'description'), 0));
+			$res[] = array(
+				'id'    => $account['id'],
+				'name'  => $account['accountName'],
+				'description'   => isset($account['description'])?$account['description']:''
+			);
 		}
 
 		return $res;
