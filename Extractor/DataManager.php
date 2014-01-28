@@ -29,7 +29,7 @@ class DataManager
 		$this->temp = $temp;
 	}
 
-	public function saveToCsv(array $data, $tableName, Profile $profile, CsvFile $csv)
+	public function saveToCsv(array $data, Profile $profile, CsvFile $csv)
 	{
 		$cnt = 0;
 		/** @var Result $result */
@@ -61,13 +61,11 @@ class DataManager
 		}
 	}
 
-	public function uploadCsv($file, $accountId, $tableName, $incremental=false)
+	public function uploadCsv($file, $tableId, $incremental=false)
 	{
-		$bucketId = $this->configuration->getInBucketId($accountId);
-		$tableId = $bucketId . '.' . $tableName;
 		$sapi = $this->configuration->getStorageApi();
 
-		$table = new Table($sapi, $tableId, $file, 'id', false, ',', '"', true);
+		$table = new Table($sapi, $tableId, $file, 'id', false, ',', '"', $incremental);
 		$table->save(true);
 	}
 

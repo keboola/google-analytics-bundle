@@ -108,7 +108,7 @@ class Extractor
 				}
 			}
 
-			$this->dataManager->uploadCsv($profilesCsv->getPathname(), $accountId, 'profiles');
+			$this->dataManager->uploadCsv($profilesCsv->getPathname(), $this->getOutputTable($account, 'profiles'));
 		}
 
 		return $status;
@@ -145,7 +145,7 @@ class Extractor
 		}
 
 		$csv = $this->getOutputCsv($tableName, $profile);
-		$this->dataManager->saveToCsv($resultSet, $tableName, $profile, $csv);
+		$this->dataManager->saveToCsv($resultSet, $profile, $csv);
 
 		// Paging
 		$params = $this->gaApi->getDataParameters();
@@ -159,11 +159,11 @@ class Extractor
 				$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'],
 					$filters, $dateFrom, $dateTo, 'ga:date', $start, $params['itemsPerPage']);
 
-				$this->dataManager->saveToCsv($resultSet, $tableName, $profile, $csv);
+				$this->dataManager->saveToCsv($resultSet, $profile, $csv);
 			}
 		}
 
-		$this->dataManager->uploadCsv($csv->getPathname(), $account->getAccountId(), $tableName, true);
+		$this->dataManager->uploadCsv($csv->getPathname(), $this->getOutputTable($account, $tableName), true);
 	}
 
 	public function setCurrAccountId($id)
@@ -195,5 +195,14 @@ class Extractor
 		$tmpFileInfo = $this->temp->createFile($fileName);
 
 		return new CsvFile($tmpFileInfo->getPathname());
+	}
+
+	protected function getOutputTable(Account $account, $tableName)
+	{
+		$outputBucket = $this->configuration->getInBucketId($account->getAccountId());
+		if ($account->getAttribute('outputBucket') != null) {
+			$outputBucket = $account->getAttribute('outputBucket');
+		}
+		return $outputBucket . '.' . $tableName;
 	}
 }
