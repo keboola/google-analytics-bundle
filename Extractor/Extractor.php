@@ -40,6 +40,7 @@ class Extractor
 		$this->gaApi = $gaApi;
 		$this->configuration = $configuration;
 		$this->temp = $temp;
+		$this->logger = $logger;
 		$this->dataManager = new DataManager($configuration, $this->temp);
 	}
 
@@ -106,6 +107,7 @@ class Extractor
 				}
 			}
 
+			$this->dataManager->uploadCsv($profilesCsv->getPathname(), $accountId, 'profiles');
 		}
 
 		return $status;
