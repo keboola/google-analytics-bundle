@@ -73,6 +73,7 @@ class Extractor
 
 			$tmpFileInfo = $this->temp->createFile("profiles-" . $accountId . "-" . microtime() . ".csv");
 			$profilesCsv = new CsvFile($tmpFileInfo->getPathname());
+			$profilesCsv->writeRow(array('id', 'name'));
 
 			/** @var Profile $profile */
 			foreach ($account->getProfiles() as $profile) {
