@@ -50,8 +50,8 @@ class Extractor
 		$accounts = $this->configuration->getAccounts();
 		$status = array();
 
-		$dateFrom = isset($options['since'])?date('Y-m-d', $options['since']):date('Y-m-d', strtotime('-4 days'));
-		$dateTo = isset($options['until'])?date('Y-m-d', $options['until']):date('Y-m-d', strtotime('-1 day'));
+		$dateFrom = isset($options['since'])?date('Y-m-d', strtotime($options['since'])):date('Y-m-d', strtotime('-4 days'));
+		$dateTo = isset($options['until'])?date('Y-m-d', strtotime($options['until'])):date('Y-m-d', strtotime('-1 day'));
 		$dataset = isset($options['dataset'])?$options['dataset']:null;
 
 		if (isset($options['account'])) {
