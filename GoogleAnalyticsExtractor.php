@@ -230,7 +230,7 @@ class GoogleAnalyticsExtractor extends Component
 	 */
 	public function postProfiles($accountId, $profiles)
 	{
-		$account = $this->configuration->getSysBucketId('accountId', $accountId);
+		$account = $this->getConfiguration()->getAccountBy('accountId', $accountId);
 
 		if (null == $account) {
 			throw new UserException("Account '".$accountId."' not found");
