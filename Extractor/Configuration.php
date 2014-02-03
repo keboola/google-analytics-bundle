@@ -172,24 +172,7 @@ class Configuration
 		return null;
 	}
 
-//	private function getAccountId($googleId)
-//	{
-//		$accountId = 0;
-//		/** @var Account $v */
-//		foreach($this->getAccounts() as $k => $v) {
-//			if ($v->getGoogleId() == $googleId) {
-//				$accountId = $k;
-//				break;
-//			}
-//			if ($k >= $accountId) {
-//				$accountId = $k+1;
-//			}
-//		}
-//
-//		return $accountId;
-//	}
-
-	private function getIdFromName($name)
+	public function getIdFromName($name)
 	{
 		return strtolower(Table::removeSpecialChars($name));
 	}

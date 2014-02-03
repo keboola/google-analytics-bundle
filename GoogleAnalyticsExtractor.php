@@ -135,7 +135,7 @@ class GoogleAnalyticsExtractor extends Component
 		$params['accountName'] = $params['name'];
 		unset($params['name']);
 
-		if (null != $this->getConfiguration()->getAccountBy('accountName', $params['accountName'])) {
+		if (null != $this->getConfiguration()->getAccountBy('accountId', $this->configuration->getIdFromName($params['accountName']))) {
 			throw new ConfigurationException('Account already exists');
 		}
 
@@ -244,7 +244,7 @@ class GoogleAnalyticsExtractor extends Component
 				'accountId' // Accounts Google ID
 			), $profile);
 
-			$this->getConfiguration()->addProfile($accountId, $profile);
+			$this->getConfiguration()->addProfile($account, $profile);
 		}
 
 		return array("status" => "ok");
