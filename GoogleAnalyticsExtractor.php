@@ -263,5 +263,10 @@ class GoogleAnalyticsExtractor extends Component
 		$this->getConfiguration()->removeProfile($params['accountId'], $params['profileId']);
 	}
 
+	public function getToken()
+	{
+		return $this->getConfiguration()->createToken();
+	}
+
 
 }

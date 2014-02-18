@@ -13,6 +13,21 @@ keboola_google_analytics_oauth_callback:
     path: /oauth-callback
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:oauthCallback }
 
+# External Auth
+keboola_google_analytics_get_external_auth_link:
+    path: /external-link/{accountId}/
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getExternalAuthLink }
+    methods:  [GET]
+
+keboola_google_analytics_external_auth:
+    path: /external-auth
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:externalAuth }
+    methods:  [GET]
+
+keboola_google_analytics_external_auth_finish:
+    path: /external-finish
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:externalAuthFinish }
+    methods:  [GET]
 
 # Config
 keboola_google_analytics_get_configs:

@@ -9,6 +9,8 @@ use Keboola\StorageApi\Config\Reader;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Syrup\ComponentBundle\Service\Encryption\Encryptor;
+use Syrup\ComponentBundle\Service\Encryption\EncryptorFactory;
 
 class ExtractorTest extends WebTestCase
 {
@@ -21,71 +23,143 @@ class ExtractorTest extends WebTestCase
 	/** @var Configuration */
 	protected $configuration;
 
+	protected $componentName = 'ex-google-analytics';
 
 	protected function setUp()
 	{
 		self::$client = static::createClient();
 		$container = self::$client->getContainer();
+
+		$sapiToken = $container->getParameter('storage_api.test.token');
+		$sapiUrl = $container->getParameter('storage_api.test.url');
+
 		self::$client->setServerParameters(array(
-			'HTTP_X-StorageApi-Token' => $container->getParameter('storageApi.test.token')
+			'HTTP_X-StorageApi-Token' => $sapiToken
 		));
 
-		$this->storageApi = new SapiClient($container->getParameter('storageApi.test.token'));
-		$this->configuration = new Configuration($this->storageApi, 'ex-googleAnalytics');
+		$this->storageApi = new SapiClient($sapiToken, $sapiUrl, 'ex-google-analytics');
+
+		/** @var EncryptorFactory $encryptorFactory */
+		$encryptorFactory = $container->get('syrup.encryptor_factory');
+		$encryptor = $encryptorFactory->get($this->componentName);
+
+		$this->configuration = new Configuration($this->storageApi, $this->componentName, $encryptor);
+
+		try {
+			$this->configuration->create();
+		} catch (\Exception $e) {
+			// bucket exists
+		}
 
 		// Cleanup
-		$accounts = $this->configuration->getAccounts(true);
-
-		/** @var Account $account */
-		foreach ($accounts as $k => $account) {
-			$this->configuration->removeAccount($k);
-			$tables = $this->storageApi->listTables('in.c-ex-googleAnalytics-' . $k);
-			foreach ($tables as $table) {
-				$this->storageApi->dropTable($table['id']);
-			}
+		$sysBucketId = $this->configuration->getSysBucketId();
+		$accTables = $this->storageApi->listTables($sysBucketId);
+		foreach ($accTables as $table) {
+			$this->storageApi->dropTable($table['id']);
 		}
 	}
 
-	protected function createTestAccount()
+	protected function createConfig()
 	{
 		$this->configuration->addAccount(array(
-			'googleId'  => '123456',
-			'name'      => 'test',
-			'email'     => 'test@keboola.com',
-			'accessToken'   => 'accessToken',
-			'refreshToken'  => 'refreshToken'
+			'id'            => 'test',
+			'accountName'   => 'Test',
+			'description'   => 'Test Account created by PhpUnit test suite'
 		));
+	}
+
+	protected function createAccount()
+	{
+		$account = $this->configuration->getAccountBy('accountId', 'test');
+		$account->setGoogleId('123456');
+		$account->setGoogleName('googleTestAccount');
+		$account->setEmail('test@keboola.com');
+		$account->setAccessToken('accessToken');
+		$account->setRefreshToken('refreshToken');
+		$account->setConfiguration($account->getDefaultConfiguration());
+
+		$account->save();
 	}
 
 	protected function assertAccount($account)
 	{
+		$this->assertArrayHasKey('accountId', $account);
+		$this->assertArrayHasKey('accountName', $account);
 		$this->assertArrayHasKey('googleId', $account);
-		$this->assertArrayHasKey('name', $account);
+		$this->assertArrayHasKey('googleName', $account);
 		$this->assertArrayHasKey('email', $account);
 		$this->assertArrayHasKey('accessToken', $account);
 		$this->assertArrayHasKey('refreshToken', $account);
 		$this->assertArrayHasKey('configuration', $account);
 
+		$this->assertNotEmpty($account['accountId']);
+		$this->assertNotEmpty($account['accountName']);
 		$this->assertNotEmpty($account['googleId']);
-		$this->assertNotEmpty($account['name']);
+		$this->assertNotEmpty($account['googleName']);
 		$this->assertNotEmpty($account['email']);
 		$this->assertNotEmpty($account['accessToken']);
 		$this->assertNotEmpty($account['refreshToken']);
 		$this->assertNotEmpty($account['configuration']);
 	}
 
-	protected function createTestProfile()
+	protected function createProfile()
 	{
 		$this->createTestAccount();
 
-		$this->configuration->addProfile(array(
-			array(
-				'profileId'     => '0',
-				'googleId'      => '987654321',
-				'name'          => 'testProfile',
-				'webPropertyId' => 'web-property-id'
-			)
-		), 0);
+
+	}
+
+	/**
+	 * Config
+	 */
+
+	public function testPostConfig()
+	{
+		self::$client->request(
+			'POST', '/ex-google-analytics/configs',
+			array(),
+			array(),
+			array(),
+			json_encode(array(
+				'id'            => 'test',
+				'name'          => 'Test',
+				'description'   => 'Test Account created by PhpUnit test suite'
+			))
+		);
+
+		$responseJson = self::$client->getResponse()->getContent();
+		$response = json_decode($responseJson, true);
+
+		$this->assertEquals('test', $response['id']);
+		$this->assertEquals('Test', $response['name']);
+	}
+
+	public function testGetConfig()
+	{
+		$this->createConfig();
+
+		self::$client->request('GET', '/ex-google-analytics/configs');
+
+		$responseJson = self::$client->getResponse()->getContent();
+		$response = json_decode($responseJson, true);
+
+		$this->assertEquals('test', $response[0]['id']);
+		$this->assertEquals('Test', $response[0]['name']);
+	}
+
+	public function testDeleteConfig()
+	{
+		$this->createConfig();
+
+		self::$client->request('DELETE', '/ex-google-analytics/configs/test');
+
+		/* @var Response $response */
+		$response = self::$client->getResponse();
+
+		$accounts = $this->configuration->getAccounts(true);
+
+		$this->assertEquals(204, $response->getStatusCode());
+		$this->assertEmpty($accounts);
 	}
 
 	/**
@@ -94,46 +168,45 @@ class ExtractorTest extends WebTestCase
 
 	public function testPostAccount()
 	{
+		$this->createConfig();
+
 		self::$client->request(
-			'POST', '/ex-google-analytics/account',
+			'POST', '/ex-google-analytics/account/test',
 			array(),
 			array(),
 			array(),
 			json_encode(array(
 				'googleId'  => '123456',
-				'name'      => 'test',
+				'googleName'      => 'googleTestAccount',
 				'email'     => 'test@keboola.com',
 				'accessToken'   => 'accessToken',
 				'refreshToken'  => 'refreshToken'
 			))
 		);
 
-		/* @var Response $responseJson */
 		$responseJson = self::$client->getResponse()->getContent();
 		$response = json_decode($responseJson, true);
 
-		$this->assertEquals("ok", $response['status']);
+		$this->assertEquals('test', $response['id']);
 
 		$accounts = $this->configuration->getAccounts(true);
-		$account = $accounts[0];
+		$account = $accounts['test'];
 
 		$this->assertAccount($account);
 	}
 
 	public function testGetAccount()
 	{
-		$this->createTestAccount();
+		$this->createConfig();
+		$this->createAccount();
 
-		self::$client->request(
-			'GET', '/ex-google-analytics/account',
-			array(
-				'accountId' => 0
-			)
-		);
+		self::$client->request('GET', '/ex-google-analytics/account/test');
 
 		/* @var Response $responseJson */
 		$responseJson = self::$client->getResponse()->getContent();
 		$response = json_decode($responseJson, true);
+
+		var_dump($response); die;
 
 		$this->assertEquals("ok", $response['status']);
 		$this->assertArrayHasKey('account', $response);
@@ -142,22 +215,22 @@ class ExtractorTest extends WebTestCase
 		$this->assertAccount($account);
 	}
 
-	public function testGetAccounts()
-	{
-		$this->createTestAccount();
-
-		self::$client->request(
-			'GET', '/ex-google-analytics/accounts'
-		);
-
-		/* @var Response $responseJson */
-		$responseJson = self::$client->getResponse()->getContent();
-		$response = json_decode($responseJson, true);
-
-		$this->assertEquals("ok", $response['status']);
-		$this->assertArrayHasKey('accounts', $response);
-		$this->assertNotEmpty($response['accounts']);
-	}
+//	public function testGetAccounts()
+//	{
+//		$this->createTestAccount();
+//
+//		self::$client->request(
+//			'GET', '/ex-google-analytics/accounts'
+//		);
+//
+//		/* @var Response $responseJson */
+//		$responseJson = self::$client->getResponse()->getContent();
+//		$response = json_decode($responseJson, true);
+//
+//		$this->assertEquals("ok", $response['status']);
+//		$this->assertArrayHasKey('accounts', $response);
+//		$this->assertNotEmpty($response['accounts']);
+//	}
 
 	public function testDeleteAccount()
 	{

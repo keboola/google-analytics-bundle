@@ -17,6 +17,7 @@ use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\StorageApi\Client as StorageApi;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -57,6 +58,22 @@ class OauthController extends BaseController
 	private function getGoogleApi()
 	{
 		return $this->container->get('google_rest_api');
+	}
+
+	public function externalAuthAction()
+	{
+		$request = $this->getRequest();
+
+		$request->request->set('token', $request->query->get('token'));
+		$request->request->set('account', $request->query->get('account'));
+		$request->request->set('referrer', $request->query->get('referrer'));
+
+		return $this->forward('KeboolaGoogleAnalyticsBundle:Oauth:oauth');
+	}
+
+	public function externalAuthFinishAction()
+	{
+		return $this->render('KeboolaGoogleAnalyticsBundle:Oauth:finish.html.twig');
 	}
 
 	public function oauthAction()
