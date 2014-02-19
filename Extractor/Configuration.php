@@ -36,7 +36,7 @@ class Configuration
 	/** @var EncryptorInterface */
 	protected $encryptor;
 
-	protected $tokenExpiration = 86400;
+	protected $tokenExpiration = 172800;
 
 	public function __construct(StorageApi $storageApi, $componentName, EncryptorInterface $encryptor)
 	{
