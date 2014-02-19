@@ -76,7 +76,7 @@ class ExtractorTest extends WebTestCase
 		$account->setEmail('test@keboola.com');
 		$account->setAccessToken('accessToken');
 		$account->setRefreshToken('refreshToken');
-		$account->setConfiguration($account->getDefaultConfiguration());
+		$account->setConfiguration(json_decode($account->getDefaultConfiguration(), true));
 
 		$account->save();
 	}
@@ -204,33 +204,26 @@ class ExtractorTest extends WebTestCase
 
 		/* @var Response $responseJson */
 		$responseJson = self::$client->getResponse()->getContent();
-		$response = json_decode($responseJson, true);
+		$account = json_decode($responseJson, true);
 
-		var_dump($response); die;
-
-		$this->assertEquals("ok", $response['status']);
-		$this->assertArrayHasKey('account', $response);
-
-		$account = $response['account'];
 		$this->assertAccount($account);
 	}
 
-//	public function testGetAccounts()
-//	{
-//		$this->createTestAccount();
-//
-//		self::$client->request(
-//			'GET', '/ex-google-analytics/accounts'
-//		);
-//
-//		/* @var Response $responseJson */
-//		$responseJson = self::$client->getResponse()->getContent();
-//		$response = json_decode($responseJson, true);
-//
-//		$this->assertEquals("ok", $response['status']);
-//		$this->assertArrayHasKey('accounts', $response);
-//		$this->assertNotEmpty($response['accounts']);
-//	}
+	public function testGetAccounts()
+	{
+		$this->createConfig();
+		$this->createAccount();
+
+		self::$client->request(
+			'GET', '/ex-google-analytics/accounts'
+		);
+
+		/* @var Response $responseJson */
+		$responseJson = self::$client->getResponse()->getContent();
+		$response = json_decode($responseJson, true);
+
+		$this->assertNotEmpty($response);
+	}
 
 	public function testDeleteAccount()
 	{
@@ -243,22 +236,20 @@ class ExtractorTest extends WebTestCase
 
 	public function testPostProfiles()
 	{
-		$this->createTestAccount();
+		$this->createConfig();
+		$this->createAccount();
 
 		self::$client->request(
-			'POST', '/ex-google-analytics/profiles',
+			'POST', '/ex-google-analytics/profiles/test',
 			array(),
 			array(),
 			array(),
 			json_encode(array(
-				'accountId' => '0',
-				'profiles'  => array(
-					array(
-						'profileId'     => '0',
-						'googleId'      => '987654321',
-						'name'          => 'testProfile',
-						'webPropertyId' => 'web-property-id'
-					)
+				array(
+					'googleId'      => '987654321',
+					'accountId'     => '567890',
+					'name'          => 'testProfile',
+					'webPropertyId' => 'web-property-id'
 				)
 			))
 		);
@@ -269,7 +260,7 @@ class ExtractorTest extends WebTestCase
 
 		$this->assertEquals("ok", $response['status']);
 
-		$account = $this->configuration->getAccountBy('id', 0);
+		$account = $this->configuration->getAccountBy('accountId', 'test');
 		$profiles = $account->getProfiles();
 
 		$this->assertNotEmpty($profiles);
