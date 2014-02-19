@@ -218,7 +218,6 @@ class ExtractorTest extends WebTestCase
 			'GET', '/ex-google-analytics/accounts'
 		);
 
-		/* @var Response $responseJson */
 		$responseJson = self::$client->getResponse()->getContent();
 		$response = json_decode($responseJson, true);
 
@@ -266,4 +265,24 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($profiles);
 	}
 
+	/**
+	 * External
+	 */
+
+	public function testExternalLink()
+	{
+		$this->createConfig();
+		$this->createAccount();
+
+		self::$client->followRedirects();
+		self::$client->request(
+			'GET', '/ex-google-analytics/external-link/test'
+		);
+
+		$responseJson = self::$client->getResponse()->getContent();
+		$response = json_decode($responseJson, true);
+
+		$this->assertArrayHasKey('link', $response);
+		$this->assertNotEmpty($response['link']);
+	}
 }
