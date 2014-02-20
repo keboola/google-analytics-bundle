@@ -15,6 +15,7 @@ use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\ClientBundle\Google\RestApi;
 use Keboola\StorageApi\Client as StorageApi;
+use Keboola\StorageApi\ClientException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,6 +64,18 @@ class OauthController extends BaseController
 	public function externalAuthAction()
 	{
 		$request = $this->getRequest();
+
+		// check token - if expired redirect to error page
+		try {
+			$sapi = new StorageApi($request->query->get('token'), null, $this->componentName);
+		} catch (ClientException $e) {
+
+			if ($e->getCode() == 401) {
+				return $this->render('KeboolaGoogleAnalyticsBundle:Oauth:expired.html.twig');
+			} else {
+				throw $e;
+			}
+		}
 
 		$request->request->set('token', $request->query->get('token'));
 		$request->request->set('account', $request->query->get('account'));
@@ -165,4 +178,4 @@ class OauthController extends BaseController
 		}
 	}
 
-} 
+}

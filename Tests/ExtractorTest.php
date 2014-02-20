@@ -102,13 +102,6 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($account['configuration']);
 	}
 
-	protected function createProfile()
-	{
-		$this->createTestAccount();
-
-
-	}
-
 	/**
 	 * Config
 	 */
@@ -224,11 +217,6 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($response);
 	}
 
-	public function testDeleteAccount()
-	{
-
-	}
-
 	/**
 	 * Profiles
 	 */
@@ -284,5 +272,14 @@ class ExtractorTest extends WebTestCase
 
 		$this->assertArrayHasKey('link', $response);
 		$this->assertNotEmpty($response['link']);
+	}
+
+	/**
+	 * Run
+	 */
+
+	public function testRun()
+	{
+		//@TODO
 	}
 }
