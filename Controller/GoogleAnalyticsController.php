@@ -7,10 +7,8 @@
 
 namespace Keboola\Google\AnalyticsBundle\Controller;
 
+use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\GoogleAnalyticsExtractor;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Syrup\ComponentBundle\Controller\ApiController;
 use Syrup\ComponentBundle\Exception\UserException;
 
@@ -19,14 +17,26 @@ class GoogleAnalyticsController extends ApiController
 
 	/** Tokens */
 
-	public function getExternalAuthLinkAction($accountId)
+	public function postExternalAuthLinkAction()
 	{
+		$post = $this->getPostJson($this->getRequest());
+
+		if (!isset($post['account'])) {
+			throw new ParameterMissingException("Parameter 'account' is required");
+		}
+
+		if (!isset($post['referrer'])) {
+			throw new ParameterMissingException("Parameter 'referrer' is required");
+		}
+
 		$token = $this->getComponent()->getToken();
+
+		$referrer = $post['referrer'] . '?token=' . $token['token'] .'&account=' . $post['account'];
 
 		$url = $this->generateUrl('keboola_google_analytics_external_auth', array(
 			'token'     => $token['token'],
-			'account'   => $accountId,
-			'referrer'  => $this->generateUrl('keboola_google_analytics_external_auth_finish', array(), true)
+			'account'   => $post['account'],
+			'referrer'  => $referrer
 		), true);
 
 		return $this->createJsonResponse(array(
@@ -111,4 +121,4 @@ class GoogleAnalyticsController extends ApiController
 		return $this->component;
 	}
 
-} 
+}
