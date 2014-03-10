@@ -262,9 +262,21 @@ class ExtractorTest extends WebTestCase
 		$this->createConfig();
 		$this->createAccount();
 
+		$referrerUrl = self::$client
+			->getContainer()
+			->get('router')
+			->generate('keboola_google_analytics_external_auth_finish', array(), true);
+
 		self::$client->followRedirects();
 		self::$client->request(
-			'GET', '/ex-google-analytics/external-link/test'
+			'POST', '/ex-google-analytics/external-link',
+			array(),
+			array(),
+			array(),
+			json_encode(array(
+				'account'   => 'test',
+				'referrer'  => $referrerUrl
+			))
 		);
 
 		$responseJson = self::$client->getResponse()->getContent();

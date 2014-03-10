@@ -8,13 +8,12 @@
 
 namespace Keboola\Google\AnalyticsBundle\Entity;
 
-use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\StorageApi\Table;
 
 class Account extends Table
 {
-	protected $_header = array('profileId', 'googleId', 'name', 'webPropertyId', 'accountId');
+	protected $header = array('profileId', 'googleId', 'name', 'webPropertyId', 'accountId');
 
 	/** @var Configuration */
 	protected $configuration;
@@ -35,8 +34,8 @@ class Account extends Table
 
 	public function getAttribute($key)
 	{
-		if (isset($this->_attributes[$key])) {
-			return $this->_attributes[$key];
+		if (isset($this->attributes[$key])) {
+			return $this->attributes[$key];
 		}
 		return null;
 	}
