@@ -1,0 +1,49 @@
+parameters:
+    app_name:          google-analytics-bundle
+
+    database_driver:   pdo_mysql
+    database_host:     localhost
+    database_port:     ~
+    database_name:     symfony
+    database_user:     root
+    database_password: ~
+
+    mailer_transport:  smtp
+    mailer_host:       localhost
+    mailer_user:       ~
+    mailer_password:   ~
+
+    locale:            en
+    secret:            VeryMuchClandestinePhraze
+
+    uploader:
+		aws-access-key:
+		aws-secret-key:
+		s3-upload-path:
+		bitly-login:
+		bitly-api-key:
+
+    storage_api.url:        https://connection.keboola.com
+    storage_api.test.url:   https://connection.keboola.com
+    storage_api.test.token: SAPI_TOKEN
+
+    shared_sapi.url:        https://connection.keboola.com
+    shared_sapi.token:      SAPI_TOKEN
+
+    google.client-id: GOOGLE_CLIENT_ID
+    google.client-secret: GOOGLE_CLIENT_SECRET
+
+    components:
+        ex-dummy:
+            class:  Syrup\ComponentBundle\Component\DummyExtractor
+            encryption_key:
+            shared_sapi:
+                token: SAPI_TOKEN
+                url: https://connection.keboola.com
+        api-google:
+            class:  Keboola\Google\ClientBundle\Client
+            bundle: Keboola\Google\ClientBundle\KeboolaGoogleClientBundle
+        ex-google-analytics:
+            class:  Keboola\Google\AnalyticsBundle\GoogleAnalyticsExtractor
+            bundle: Keboola\Google\AnalyticsBundle\KeboolaGoogleAnalyticsBundle
+            encryption_key:

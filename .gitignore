@@ -4,7 +4,6 @@ scripts/debug.php
 .idea
 application/configs/config.ini
 cache.properties
-composer.lock
 composer.phar
 tmp
 vendor/
