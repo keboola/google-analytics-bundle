@@ -17,11 +17,11 @@
     ],
     "require": {
         "php": ">=5.3.5",
-		"keboola/google-client-bundle": "1.1.*"
+		"keboola/google-client-bundle": "1.1.*",
+        "keboola/syrup": "~1.2.0"
     },
     "require-dev": {
-		"phpunit/phpunit": "3.7.*",
-        "keboola/syrup": "~1.2.0"
+		"phpunit/phpunit": "3.7.*"
     },
     "scripts": {
         "post-install-cmd": [
