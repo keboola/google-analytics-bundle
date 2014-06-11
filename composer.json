@@ -17,11 +17,16 @@
     ],
     "require": {
         "php": ">=5.3.5",
-		"keboola/google-client-bundle": "1.1.*"
+		"keboola/google-client-bundle": "1.1.*",
+        "keboola/syrup": "~1.2.0"
     },
     "require-dev": {
+<<<<<<< HEAD
 		"phpunit/phpunit": "3.7.*",
         "keboola/syrup": "~1.2.2"
+=======
+		"phpunit/phpunit": "3.7.*"
+>>>>>>> d80004d90ba9e1b525616aa4e798d18f299a1065
     },
     "scripts": {
         "post-install-cmd": [
@@ -43,7 +48,8 @@
 	    "symfony-web-dir": "vendor/keboola/syrup/web",
         "incenteev-parameters": {
             "keep-outdated": true,
-            "file": "vendor/keboola/syrup/app/config/parameters.yml"
+            "file": "vendor/keboola/syrup/app/config/parameters.yml",
+            "dist-file": "parameters.yml"
         }
     }
 }
