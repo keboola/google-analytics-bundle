@@ -103,7 +103,7 @@ class OauthController extends BaseController
 
 			$url = $googleApi->getAuthorizationUrl(
 				$this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL),
-				'https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+				'https://www.googleapis.com/auth/analytics.readonly profile email',
 				'force'
 			);
 
@@ -161,8 +161,8 @@ class OauthController extends BaseController
 
 			$account
 				->setGoogleId($userData['id'])
-				->setGoogleName($userData['name'])
-				->setEmail($userData['email'])
+				->setGoogleName($userData['displayName'])
+				->setEmail($userData['emails'][0]['value'])
 				->setAccessToken($tokens['access_token'])
 				->setRefreshToken($tokens['refresh_token'])
 			;

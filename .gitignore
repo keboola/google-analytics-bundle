@@ -7,7 +7,7 @@ cache.properties
 composer.lock
 composer.phar
 tmp
-vendor/
+/vendor/
 
 # osx noise
 .DS_Store

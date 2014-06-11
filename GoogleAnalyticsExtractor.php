@@ -183,8 +183,6 @@ class GoogleAnalyticsExtractor extends Component
 			$account->setGoogleId($params['googleId']);
 		}
 		if (isset($params['googleName'])) {
-		}
-		if (isset($params['googleName'])) {
 			$account->setGoogleName($params['googleName']);
 		}
 		if (isset($params['email'])) {
