@@ -21,12 +21,7 @@
         "keboola/syrup": "~1.2.0"
     },
     "require-dev": {
-<<<<<<< HEAD
-		"phpunit/phpunit": "3.7.*",
-        "keboola/syrup": "~1.2.2"
-=======
 		"phpunit/phpunit": "3.7.*"
->>>>>>> d80004d90ba9e1b525616aa4e798d18f299a1065
     },
     "scripts": {
         "post-install-cmd": [
