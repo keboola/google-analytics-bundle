@@ -67,7 +67,10 @@ class OauthController extends BaseController
 
 		// check token - if expired redirect to error page
 		try {
-			$sapi = new StorageApi($request->query->get('token'), null, $this->componentName);
+			$sapi = new StorageApi([
+				'token'     => $request->query->get('token'),
+				'userAgent' => $this->componentName
+			]);
 		} catch (ClientException $e) {
 
 			if ($e->getCode() == 401) {
@@ -98,8 +101,13 @@ class OauthController extends BaseController
 		$bag = $this->initSessionBag();
 		$googleApi = $this->getGoogleApi();
 
+		$token = $this->getRequest()->request->get('token');
+
 		try {
-			$client = new StorageApi($this->getRequest()->request->get('token'), null, 'ex-google-analytics');
+			$client = new StorageApi([
+				'token'     => $token,
+				'userAgent' => 'ex-google-analytics'
+			]);
 
 			$url = $googleApi->getAuthorizationUrl(
 				$this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL),
@@ -113,7 +121,7 @@ class OauthController extends BaseController
 
 			return new RedirectResponse($url);
 		} catch (\Exception $e) {
-			throw new ApplicationException(500, 'OAuth UI request error', $e);
+			throw new ApplicationException('OAuth UI request error', $e);
 		}
 	}
 
@@ -140,7 +148,10 @@ class OauthController extends BaseController
 		}
 
 		try {
-			$storageApi = new StorageApi($token, null, 'ex-google-analytics');
+			$storageApi = new StorageApi([
+				'token'     => $token,
+				'userAgent' => 'ex-google-analytics'
+			]);
 
 			/** @var EncryptorInterface $encryptor */
 			$encryptor = $this->get('syrup.encryptor');
@@ -159,10 +170,13 @@ class OauthController extends BaseController
 				throw new ConfigurationException("Account doesn't exist");
 			}
 
+			$userName = isset($userData['name'])?$userData['name']:$userData['displayName'];
+			$userEmail = isset($userData['email'])?$userData['email']:$userData['emails'][0]['value'];
+
 			$account
 				->setGoogleId($userData['id'])
-				->setGoogleName($userData['displayName'])
-				->setEmail($userData['emails'][0]['value'])
+				->setGoogleName($userName)
+				->setEmail($userEmail)
 				->setAccessToken($tokens['access_token'])
 				->setRefreshToken($tokens['refresh_token'])
 			;
