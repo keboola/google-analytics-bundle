@@ -19,8 +19,8 @@ use Syrup\ComponentBundle\Exception\UserException;
 
 class GoogleAnalyticsExtractor extends Component
 {
-	protected $_name = 'google-analytics';
-	protected $_prefix = 'ex';
+	protected $name = 'google-analytics';
+	protected $prefix = 'ex';
 
 	/** @var Configuration */
 	protected $configuration;
@@ -35,9 +35,9 @@ class GoogleAnalyticsExtractor extends Component
 	{
 		if ($this->configuration == null) {
 			$this->configuration = new Configuration(
-				$this->_storageApi,
+				$this->storageApi,
 				$this->getFullName(),
-				$this->_container->get('syrup.encryptor')
+				$this->container->get('syrup.encryptor')
 			);
 		}
 		return $this->configuration;
@@ -66,10 +66,10 @@ class GoogleAnalyticsExtractor extends Component
 	protected function getApi(Account $account)
 	{
 		/** @var RestApi $gaApi */
-		$gaApi = $this->_container->get('google_analytics_rest_api');
+		$gaApi = $this->container->get('google_analytics_rest_api');
 		$gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
 
-		$this->extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp(), $this->_log);
+		$this->extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp(), $this->log);
 		$this->extractor->setCurrAccountId($account->getAccountId());
 
 		$gaApi->getApi()->setRefreshTokenCallback(array($this->extractor, 'refreshTokenCallback'));
@@ -84,8 +84,8 @@ class GoogleAnalyticsExtractor extends Component
 	public function postRun($params)
 	{
 		/** @var RestApi $googleAnalyticsApi */
-		$googleAnalyticsApi = $this->_container->get('google_analytics_rest_api');
-		$this->extractor = new Extractor($googleAnalyticsApi, $this->getConfiguration(), $this->getTemp(), $this->_log);
+		$googleAnalyticsApi = $this->container->get('google_analytics_rest_api');
+		$this->extractor = new Extractor($googleAnalyticsApi, $this->getConfiguration(), $this->getTemp(), $this->log);
 		$status = $this->extractor->run($params);
 
 		return array(

@@ -37,7 +37,11 @@ class ExtractorTest extends WebTestCase
 			'HTTP_X-StorageApi-Token' => $sapiToken
 		));
 
-		$this->storageApi = new SapiClient($sapiToken, $sapiUrl, 'ex-google-analytics');
+		$this->storageApi = new SapiClient([
+			'token' => $sapiToken,
+			'url'   => $sapiUrl,
+			'userAgent' => 'ex-google-analytics'
+		]);
 
 		/** @var EncryptorFactory $encryptorFactory */
 		$encryptorFactory = $container->get('syrup.encryptor_factory');
