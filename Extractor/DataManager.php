@@ -29,34 +29,34 @@ class DataManager
 		$this->temp = $temp;
 	}
 
-	public function saveToCsv(array $data, Profile $profile, CsvFile $csv)
+	public function saveToCsv(array $data, Profile $profile, CsvFile $csv, $incremental = false)
 	{
 		$cnt = 0;
 		/** @var Result $result */
 		foreach ($data as $result) {
 			$metrics = $result->getMetrics();
 			$dimensions = $result->getDimensions();
-			if (isset($dimensions['date'])) {
-				$dimensions['date'] = date('Y-m-d', strtotime($dimensions['date']));
-			}
-			$row = array_merge(array_values($dimensions), array_values($metrics));
-			$outRow = array();
 
 			// CSV Header
-			if ($cnt == 0) {
+			if ($cnt == 0 && !$incremental) {
 				$headerRow = array_merge(
 					array('id', 'idProfile'),
 					array_keys($dimensions),
 					array_keys($metrics)
 				);
 				$csv->writeRow($headerRow);
+			} else {
+				if (isset($dimensions['date'])) {
+					$dimensions['date'] = date('Y-m-d', strtotime($dimensions['date']));
+				}
+				$row = array_merge(array_values($dimensions), array_values($metrics));
+				$outRow = array_merge(
+					array(sha1($profile->getGoogleId() . implode('', $dimensions)), $profile->getGoogleId()),
+					$row
+				);
+				$csv->writeRow($outRow);
 			}
 
-			$outRow = array_merge(
-				array(sha1($profile->getGoogleId() . implode('', $dimensions)), $profile->getGoogleId()),
-				$row
-			);
-			$csv->writeRow($outRow);
 			$cnt++;
 		}
 	}

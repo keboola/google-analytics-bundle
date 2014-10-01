@@ -166,7 +166,7 @@ class Extractor
 				$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'],
 					$filters, $dateFrom, $dateTo, 'ga:date', $start, $params['itemsPerPage']);
 
-				$this->dataManager->saveToCsv($resultSet, $profile, $csv);
+				$this->dataManager->saveToCsv($resultSet, $profile, $csv, true);
 			}
 		}
 
