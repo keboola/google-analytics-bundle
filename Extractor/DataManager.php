@@ -45,17 +45,17 @@ class DataManager
 					array_keys($metrics)
 				);
 				$csv->writeRow($headerRow);
-			} else {
-				if (isset($dimensions['date'])) {
-					$dimensions['date'] = date('Y-m-d', strtotime($dimensions['date']));
-				}
-				$row = array_merge(array_values($dimensions), array_values($metrics));
-				$outRow = array_merge(
-					array(sha1($profile->getGoogleId() . implode('', $dimensions)), $profile->getGoogleId()),
-					$row
-				);
-				$csv->writeRow($outRow);
 			}
+
+			if (isset($dimensions['date'])) {
+				$dimensions['date'] = date('Y-m-d', strtotime($dimensions['date']));
+			}
+			$row = array_merge(array_values($dimensions), array_values($metrics));
+			$outRow = array_merge(
+				array(sha1($profile->getGoogleId() . implode('', $dimensions)), $profile->getGoogleId()),
+				$row
+			);
+			$csv->writeRow($outRow);
 
 			$cnt++;
 		}
