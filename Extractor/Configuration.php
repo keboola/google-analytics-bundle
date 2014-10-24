@@ -51,9 +51,9 @@ class Configuration
 		return $this->encryptor;
 	}
 
-	public function setStorageApi($sapi)
+	public function setStorageApi($storageApi)
 	{
-		$this->storageApi = $sapi;
+		$this->storageApi = $storageApi;
 	}
 
 	public function getStorageApi()

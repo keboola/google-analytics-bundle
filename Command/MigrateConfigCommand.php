@@ -8,6 +8,7 @@
 namespace Keboola\Google\AnalyticsBundle\Command;
 
 
+use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\StorageApi\Client;
 use Keboola\StorageApi\Table;
@@ -15,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Syrup\ComponentBundle\Service\Encryption\Encryptor;
+use Syrup\ComponentBundle\Encryption\Encryptor;
 
 class MigrateConfigCommand extends ContainerAwareCommand
 {
@@ -46,7 +47,8 @@ class MigrateConfigCommand extends ContainerAwareCommand
 		$encryptor = new Encryptor($encryptionKey);
 
 		// Init new SYS bucket
-		$configuration = new Configuration($storageApi, $this->componentName, $encryptor);
+		$configuration = new Configuration($this->componentName, $encryptor);
+		$configuration->setStorageApi($storageApi);
 
 		try {
 			$configuration->create();
@@ -54,40 +56,22 @@ class MigrateConfigCommand extends ContainerAwareCommand
 			// do nothing, bucket probably exists
 		}
 
-		// Get configuration from old SYS bucket
-		$sysBucketId = 'sys.c-ex-googleAnalytics';
+		// Get configuration
+		$sysBucketId = 'sys.c-ex-google-analytics';
 
 		if (!$storageApi->bucketExists($sysBucketId)) {
-			$sysBucketId = 'sys.ex-googleAnalytics';
-
-			if (!$storageApi->bucketExists($sysBucketId)) {
-				throw new \Exception("No old SYS bucket found");
-			}
+			throw new \Exception("No SYS bucket found");
 		}
 
-		$oldAccounts = $storageApi->listTables($sysBucketId);
+		$accounts = $configuration->getAccounts();
 
-		foreach ($oldAccounts as $oldAccount) {
+		/** @var Account $account */
+		foreach ($accounts as $account) {
 
-			$attributes = $this->parseAttributes($oldAccount['attributes']);
+			$cfg = $this->renameItems($account->getConfiguration());
 
-			$account = $configuration->addAccount(array(
-				'id'    => $oldAccount['name'],
-				'name'  => $oldAccount['name'],
-				'accountName'   => $oldAccount['name'],
-				'googleId'      => $attributes['googleId'],
-				'googleName'    => $attributes['name'],
-				'email'         => $attributes['email'],
-				'accessToken'   => $encryptor->encrypt($attributes['accessToken']),
-				'refreshToken'  => $encryptor->encrypt($attributes['refreshToken']),
-				'configuration' => $attributes['configuration'],
-				'outputBucket'  => 'in.c-ex-googleAnalytics-' . str_replace('account-', '', $oldAccount['name'])
-			));
-
-			$table = new Table($storageApi, $account->getId());
-			$table->setFromString($storageApi->exportTable($oldAccount['id']), ',', '"', true);
-
-			$table->save();
+			$account->setConfiguration($cfg);
+			$account->save();
 		}
 
 	}
@@ -101,4 +85,49 @@ class MigrateConfigCommand extends ContainerAwareCommand
 		return $res;
 	}
 
-} 
+	private function renameItems($config)
+	{
+		$map = array(
+			'visitors'  => 'users',
+			'percentNewVisits'  => 'percentNewSessions',
+			'newVisits' => 'newUsers',
+			'visitsToTransaction'   => 'sessionsToTransaction',
+			'visitorType'    => 'userType',
+			'visitCount' => 'sessionCount',
+			'daysSinceLastVisit' => 'daysSinceLastSession',
+			'socialInteractionsPerVisit' => 'socialInteractionsPerSession',
+			'socialInteractionNetworkActionVisit'    => 'socialInteractionNetworkActionSession',
+			'visits' => 'sessions',
+			'visitBounceRate'    => 'bounceRate',
+			'timeOnSite' => 'sessionDuration',
+			'avgTimeOnSite'  => 'avgSessionDuration',
+			'visitLength'    => 'sessionDurationBucket',
+			'pageviewsPerVisit'  => 'pageviewsPerSession',
+			'searchVisits'   => 'searchSessions',
+			'percentVisitsWithSearch'    => 'percentSessionsWithSearch',
+			'goalValuePerVisit'  => 'goalValuePerSession',
+			'visitsWithEvent'    => 'sessionsWithEvent',
+			'eventsPerVisitWithEvent'    => 'eventsPerSessionWithEvent',
+			'transactionsPerVisit'   => 'transactionsPerSession',
+			'transactionRevenuePerVisit' => 'transactionRevenuePerSession',
+			'visitorGender'  => 'userGender',
+			'visitorAgeBracket'  => 'userAgeBracket'
+		);
+
+		foreach ($config as $accountName => $cfg) {
+			foreach ($cfg['metrics'] as $k => $v) {
+				if (array_key_exists($v, $map)) {
+					$config[$accountName]['metrics'][$k] = $map[$v];
+				}
+			}
+			foreach ($cfg['dimensions'] as $k => $v) {
+				if (array_key_exists($v, $map)) {
+					$config[$accountName]['dimensions'][$k] = $map[$v];
+				}
+			}
+		}
+
+		return $config;
+	}
+
+}
