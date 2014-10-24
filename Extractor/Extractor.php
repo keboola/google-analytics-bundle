@@ -15,7 +15,8 @@ use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Monolog\Logger;
-use Syrup\ComponentBundle\Filesystem\TempService;
+use Syrup\ComponentBundle\Exception\ApplicationException;
+use Syrup\ComponentBundle\Filesystem\Temp;
 
 class Extractor
 {
@@ -30,19 +31,35 @@ class Extractor
 
 	protected $currAccountId;
 
-	/** @var TempService */
+	/** @var Temp */
 	protected $temp;
 
 	/** @var Logger */
 	protected $logger;
 
-	public function __construct(RestApi $gaApi, $configuration, TempService $temp, Logger $logger)
+	public function __construct(RestApi $gaApi, Logger $logger, Temp $temp)
 	{
 		$this->gaApi = $gaApi;
-		$this->configuration = $configuration;
 		$this->temp = $temp;
 		$this->logger = $logger;
-		$this->dataManager = new DataManager($configuration, $this->temp);
+	}
+
+	public function setConfiguration($configuration)
+	{
+		$this->configuration = $configuration;
+	}
+
+	public function getDataManager()
+	{
+		if (null == $this->configuration) {
+			throw new ApplicationException('Configuration must be set before DataManager can be created.');
+		}
+
+		if (null == $this->dataManager) {
+			$this->dataManager = new DataManager($this->configuration, $this->temp);
+		}
+
+		return $this->dataManager;
 	}
 
 	public function run($options = null)
@@ -62,8 +79,21 @@ class Extractor
 			}
 		}
 
+		if (isset($options['config'])) {
+			if (isset($accounts[$options['config']])) {
+				$accounts = array(
+					$options['config'] => $accounts[$options['config']]
+				);
+			}
+		}
+
 		/** @var Account $account */
 		foreach ($accounts as $accountId => $account) {
+
+			// check if account has been authorized
+			if (null == $account->getAttribute('accessToken')) {
+				continue;
+			}
 
 			$this->currAccountId = $accountId;
 
@@ -115,7 +145,7 @@ class Extractor
 				}
 			}
 
-			$this->dataManager->uploadCsv($profilesCsv->getPathname(), $this->getOutputTable($account, 'profiles'));
+			$this->getDataManager()->uploadCsv($profilesCsv->getPathname(), $this->getOutputTable($account, 'profiles'));
 		}
 
 		return $status;
@@ -152,7 +182,7 @@ class Extractor
 		}
 
 		$csv = $this->getOutputCsv($tableName, $profile);
-		$this->dataManager->saveToCsv($resultSet, $profile, $csv);
+		$this->getDataManager()->saveToCsv($resultSet, $profile, $csv);
 
 		// Paging
 		$params = $this->gaApi->getDataParameters();
@@ -166,11 +196,11 @@ class Extractor
 				$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'],
 					$filters, $dateFrom, $dateTo, 'ga:date', $start, $params['itemsPerPage']);
 
-				$this->dataManager->saveToCsv($resultSet, $profile, $csv, true);
+				$this->getDataManager()->saveToCsv($resultSet, $profile, $csv, true);
 			}
 		}
 
-		$this->dataManager->uploadCsv($csv->getPathname(), $this->getOutputTable($account, $tableName), true);
+		$this->getDataManager()->uploadCsv($csv->getPathname(), $this->getOutputTable($account, $tableName), true);
 	}
 
 	public function setCurrAccountId($id)

@@ -18,6 +18,7 @@ use Keboola\StorageApi\Client as StorageApi;
 use Keboola\StorageApi\ClientException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -29,31 +30,6 @@ use Syrup\ComponentBundle\Exception\UserException;
 class OauthController extends BaseController
 {
 	/**
-	 * @var AttributeBag
-	 */
-	protected $sessionBag;
-
-	/**
-	 * Init OAuth session bag
-	 *
-	 * @return AttributeBag
-	 */
-	private function initSessionBag()
-	{
-		if (!$this->sessionBag) {
-			/** @var Session $session */
-			$session = $this->container->get('session');
-			$bag = new AttributeBag('_ex_google_analytics');
-			$bag->setName('googleanalytics');
-			$session->registerBag($bag);
-
-			$this->sessionBag = $session->getBag('googleanalytics');
-		}
-
-		return $this->sessionBag;
-	}
-
-	/**
 	 * @return RestApi
 	 */
 	private function getGoogleApi()
@@ -61,10 +37,8 @@ class OauthController extends BaseController
 		return $this->container->get('google_rest_api');
 	}
 
-	public function externalAuthAction()
+	public function externalAuthAction(Request $request)
 	{
-		$request = $this->getRequest();
-
 		// check token - if expired redirect to error page
 		try {
 			$sapi = new StorageApi([
@@ -92,20 +66,21 @@ class OauthController extends BaseController
 		return $this->render('KeboolaGoogleAnalyticsBundle:Oauth:finish.html.twig');
 	}
 
-	public function oauthAction()
+	public function oauthAction(Request $request)
 	{
-		if (!$this->getRequest()->request->get('account')) {
+		if (!$request->request->get('account')) {
 			throw new ParameterMissingException("Parameter 'account' is missing");
 		}
 
-		$bag = $this->initSessionBag();
+		$session = $this->get('session');
 		$googleApi = $this->getGoogleApi();
 
-		$token = $this->getRequest()->request->get('token');
+		$token = $request->request->get('token');
 
 		try {
 			$client = new StorageApi([
 				'token'     => $token,
+				'url'       => null,
 				'userAgent' => 'ex-google-analytics'
 			]);
 
@@ -115,9 +90,9 @@ class OauthController extends BaseController
 				'force'
 			);
 
-			$bag->set('token', $client->getTokenString());
-			$bag->set('account', $this->getRequest()->request->get('account'));
-			$bag->set('referrer', $this->getRequest()->request->get('referrer'));
+			$session->set('token', $client->getTokenString());
+			$session->set('account', $request->request->get('account'));
+			$session->set('referrer', $request->request->get('referrer'));
 
 			return new RedirectResponse($url);
 		} catch (\Exception $e) {
@@ -127,17 +102,18 @@ class OauthController extends BaseController
 
 	public function oauthCallbackAction()
 	{
-		$bag = $this->initSessionBag();
+		/** @var Session $session */
+		$session = $this->get('session');
 
 		$googleApi = $this->getGoogleApi();
 
-		$token = $bag->get('token');
-		$accountId = $bag->get('account');
-		$referrer = $bag->get('referrer');
+		$token = $session->get('token');
+		$accountId = $session->get('account');
+		$referrer = $session->get('referrer');
+
+		$session->clear();
 
 		$code = $this->get('request')->query->get('code');
-
-		$bag->clear();
 
 		if (empty($token) || empty($accountId)) {
 			throw new UserException('Auth session expired');

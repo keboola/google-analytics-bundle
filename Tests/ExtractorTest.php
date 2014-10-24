@@ -2,15 +2,12 @@
 
 namespace Keboola\Google\AnalyticsBundle\Tests;
 
-use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\StorageApi\Client as SapiClient;
-use Keboola\StorageApi\Config\Reader;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Client;
-use Syrup\ComponentBundle\Service\Encryption\Encryptor;
-use Syrup\ComponentBundle\Service\Encryption\EncryptorFactory;
+use Syrup\ComponentBundle\Encryption\Encryptor;
 
 class ExtractorTest extends WebTestCase
 {
@@ -43,11 +40,11 @@ class ExtractorTest extends WebTestCase
 			'userAgent' => 'ex-google-analytics'
 		]);
 
-		/** @var EncryptorFactory $encryptorFactory */
-		$encryptorFactory = $container->get('syrup.encryptor_factory');
-		$encryptor = $encryptorFactory->get($this->componentName);
+		/** @var Encryptor $encryptor */
+		$encryptor = $container->get('syrup.encryptor');
 
-		$this->configuration = new Configuration($this->storageApi, $this->componentName, $encryptor);
+		$this->configuration = new Configuration($this->componentName, $encryptor);
+		$this->configuration->setStorageApi($this->storageApi);
 
 		try {
 			$this->configuration->create();

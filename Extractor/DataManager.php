@@ -13,17 +13,17 @@ use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\Result;
 use Keboola\StorageApi\Table;
-use Syrup\ComponentBundle\Filesystem\TempService;
+use Syrup\ComponentBundle\Filesystem\Temp;
 
 class DataManager
 {
 	/** @var Configuration */
 	protected $configuration;
 
-	/** @var TempService */
+	/** @var Temp */
 	protected $temp;
 
-	public function __construct(Configuration $configuration, TempService $temp)
+	public function __construct(Configuration $configuration, Temp $temp)
 	{
 		$this->configuration = $configuration;
 		$this->temp = $temp;

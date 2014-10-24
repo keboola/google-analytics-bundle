@@ -102,9 +102,8 @@ class RestApi
 
 		if ($result != false) {
 			return $result;
-		} else {
-			return array();
 		}
+		return array();
 	}
 
 	/**

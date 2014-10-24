@@ -9,17 +9,26 @@ namespace Keboola\Google\AnalyticsBundle\Controller;
 
 use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\GoogleAnalyticsExtractor;
+use Symfony\Component\HttpFoundation\Request;
 use Syrup\ComponentBundle\Controller\ApiController;
 use Syrup\ComponentBundle\Exception\UserException;
 
 class GoogleAnalyticsController extends ApiController
 {
-
-	/** Tokens */
-
-	public function postExternalAuthLinkAction()
+	public function preExecute(Request $request)
 	{
-		$post = $this->getPostJson($this->getRequest());
+		parent::preExecute($request);
+
+		$this->initComponent($this->storageApi, $this->componentName);
+	}
+
+	/** Tokens
+	 * @param Request $request
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
+	public function postExternalAuthLinkAction(Request $request)
+	{
+		$post = $this->getPostJson($request);
 
 		if (!isset($post['account'])) {
 			throw new ParameterMissingException("Parameter 'account' is required");
@@ -51,9 +60,9 @@ class GoogleAnalyticsController extends ApiController
 		return $this->createJsonResponse($this->getComponent()->getConfigs());
 	}
 
-	public function postConfigsAction()
+	public function postConfigsAction(Request $request)
 	{
-		$account = $this->getComponent()->postConfigs($this->getPostJson($this->getRequest()));
+		$account = $this->getComponent()->postConfigs($this->getPostJson($request));
 
 		return $this->createJsonResponse(array(
 			'id'    => $account->getAccountId(),
@@ -72,6 +81,10 @@ class GoogleAnalyticsController extends ApiController
 
 	/** Accounts */
 
+	/**
+	 * @param $id
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
 	public function getAccountAction($id)
 	{
 		$account = $this->getComponent()->getAccount($id);
@@ -88,9 +101,9 @@ class GoogleAnalyticsController extends ApiController
 		return $this->createJsonResponse($this->getComponent()->getAccounts());
 	}
 
-	public function postAccountAction($id)
+	public function postAccountAction($id, Request $request)
 	{
-		$params = $this->getPostJson($this->getRequest());
+		$params = $this->getPostJson($request);
 		$params['id'] = $id;
 
 		$account = $this->getComponent()->postAccount($params);
@@ -101,17 +114,22 @@ class GoogleAnalyticsController extends ApiController
 
 	/** Profiles */
 
+	/**
+	 * @param $accountId
+	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 */
 	public function getProfilesAction($accountId)
 	{
 		return $this->createJsonResponse($this->getComponent()->getProfiles($accountId));
 	}
 
-	public function postProfilesAction($accountId)
+	public function postProfilesAction($accountId, Request $request)
 	{
 		return $this->createJsonResponse(
-			$this->getComponent()->postProfiles($accountId, $this->getPostJson($this->getRequest()))
+			$this->getComponent()->postProfiles($accountId, $this->getPostJson($request))
 		);
 	}
+
 
 	/**
 	 * @return GoogleAnalyticsExtractor
@@ -120,5 +138,4 @@ class GoogleAnalyticsController extends ApiController
 	{
 		return $this->component;
 	}
-
 }

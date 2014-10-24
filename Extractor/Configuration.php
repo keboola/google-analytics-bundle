@@ -38,19 +38,22 @@ class Configuration
 
 	protected $tokenExpiration = 172800;
 
-	public function __construct(StorageApi $storageApi, $componentName, EncryptorInterface $encryptor)
+	public function __construct($componentName, EncryptorInterface $encryptor)
 	{
-		$this->storageApi = $storageApi;
 		$this->componentName = $componentName;
 		$this->encryptor = $encryptor;
 
 		$this->accountFactory = new AccountFactory($this);
-		$this->accounts = $this->getAccounts();
 	}
 
 	public function getEncryptor()
 	{
 		return $this->encryptor;
+	}
+
+	public function setStorageApi($sapi)
+	{
+		$this->storageApi = $sapi;
 	}
 
 	public function getStorageApi()

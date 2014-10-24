@@ -266,16 +266,16 @@ class Account extends Table
 	public function getDefaultConfiguration()
 	{
 		return '{
-					"visitors": {
-						"metrics": ["visits","pageviews","timeOnSite"],
-						"dimensions": ["visitorType","country","date"]
+					"users": {
+						"metrics": ["users","pageviews","sessionDuration"],
+						"dimensions": ["userType","country","date"]
 					},
-					"trafficSources": {
-						"metrics": ["visits","pageviews","timeOnSite","exits"],
+					"sources": {
+						"metrics": ["sessions","pageviews","sessionDuration","exits"],
 						"dimensions": ["source","medium","keyword","date"]
 					},
 					"content": {
-						"metrics": ["pageviews","uniquePageviews","timeOnPage","bounces","entrances","exits"],
+						"metrics": ["pageviews","uniquePageviews","sessionDuration","bounces","entrances","exits"],
 						"dimensions": ["pagePath","landingPagePath","exitPagePath","date"]
 					}
 				}';

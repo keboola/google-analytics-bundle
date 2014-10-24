@@ -1,6 +1,16 @@
-parameters:
-
 services:
-    google_analytics_rest_api:
+    ex_google_analytics.rest_api:
         class: Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi
         arguments: [@google_rest_api]
+
+    ex_google_analytics.job_executor:
+        class: Keboola\Google\AnalyticsBundle\Job\Executor
+        arguments: [@ex_google_analytics.configuration, @ex_google_analytics.extractor]
+
+    ex_google_analytics.extractor:
+        class: Keboola\Google\AnalyticsBundle\Extractor\Extractor
+        arguments: [@ex_google_analytics.rest_api, @logger, @syrup.temp]
+
+    ex_google_analytics.configuration:
+        class: Keboola\Google\AnalyticsBundle\Extractor\Configuration
+        arguments: [%app_name%, @syrup.encryptor]
