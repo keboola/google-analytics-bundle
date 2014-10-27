@@ -67,6 +67,10 @@ class Extractor
 
 			$this->currAccountId = $accountId;
 
+			if (null == $account->getAttribute('accessToken')) {
+				continue;
+			}
+
 			if (null == $account->getAttribute('outputBucket')) {
 				$this->configuration->initDataBucket($account->getAccountId());
 			} else {
