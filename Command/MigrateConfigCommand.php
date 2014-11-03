@@ -32,7 +32,7 @@ class MigrateConfigCommand extends ContainerAwareCommand
 	{
 		$this
 			->setName('ex-google-analytics:config:migrate')
-			->setDescription('Setup new SYS buckets from old Google Analytics Extractor')
+			->setDescription('Rename old metrics and dimensions to new')
 			->addArgument('encryptionKey', InputArgument::REQUIRED)
 			->addArgument('sapiToken', InputArgument::REQUIRED)
 		;

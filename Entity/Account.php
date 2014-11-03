@@ -266,17 +266,13 @@ class Account extends Table
 	public function getDefaultConfiguration()
 	{
 		return '{
-					"visitors": {
+					"users": {
 						"metrics": ["sessions","pageviews","sessionDuration"],
 						"dimensions": ["userType","country","date"]
 					},
-					"trafficSources": {
+					"traffic": {
 						"metrics": ["sessions","pageviews","sessionDuration","exits"],
 						"dimensions": ["source","medium","keyword","date"]
-					},
-					"pages": {
-						"metrics": ["pageviews","uniquePageviews","sessionDuration","bounces","entrances","exits"],
-						"dimensions": ["pagePath","landingPagePath","exitPagePath","date"]
 					}
 				}';
 	}
