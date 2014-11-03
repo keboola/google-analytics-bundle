@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "5c4170171195ca980ae3d875b0ae0fd0",
+    "hash": "c0ebc3b7c84d6b7c19020b8654f93355",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1322,16 +1322,16 @@
         },
         {
             "name": "keboola/storage-api-client",
-            "version": "2.11.22",
+            "version": "2.11.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/storage-api-php-client.git",
-                "reference": "3c8fd694953dca439abf1365e48a1d9fa478ca8b"
+                "reference": "3ce9f6c2b6287c4395074d6013cdd5d078874fc7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/3c8fd694953dca439abf1365e48a1d9fa478ca8b",
-                "reference": "3c8fd694953dca439abf1365e48a1d9fa478ca8b",
+                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/3ce9f6c2b6287c4395074d6013cdd5d078874fc7",
+                "reference": "3ce9f6c2b6287c4395074d6013cdd5d078874fc7",
                 "shasum": ""
             },
             "require": {
@@ -1358,20 +1358,20 @@
             ],
             "description": "Keboola Storage API PHP CLient",
             "homepage": "http://keboola.com",
-            "time": "2014-10-22 12:06:37"
+            "time": "2014-10-31 13:51:10"
         },
         {
             "name": "keboola/syrup",
-            "version": "1.6.5",
+            "version": "1.6.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup.git",
-                "reference": "ea3ad24b1c0b787f4f8436d10d5853c287fc855f"
+                "reference": "a4601aa65d3393dd8a18f89784fd7502bdfb9f74"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup/zipball/ea3ad24b1c0b787f4f8436d10d5853c287fc855f",
-                "reference": "ea3ad24b1c0b787f4f8436d10d5853c287fc855f",
+                "url": "https://api.github.com/repos/keboola/syrup/zipball/a4601aa65d3393dd8a18f89784fd7502bdfb9f74",
+                "reference": "a4601aa65d3393dd8a18f89784fd7502bdfb9f74",
                 "shasum": ""
             },
             "require": {
@@ -1402,7 +1402,7 @@
                 "MIT"
             ],
             "description": "Syrup - Concentrated extract(or)s",
-            "time": "2014-10-22 13:27:11"
+            "time": "2014-10-31 13:19:06"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -2184,17 +2184,17 @@
         },
         {
             "name": "syrup/component-bundle",
-            "version": "1.9.16",
+            "version": "1.9.18",
             "target-dir": "Syrup/ComponentBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup-component-bundle.git",
-                "reference": "1d0c34025bc88a00015f5322acbb9665a7cfbc94"
+                "reference": "8c183de87eb1ad5620fb2e8cf4800823c7a14595"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/1d0c34025bc88a00015f5322acbb9665a7cfbc94",
-                "reference": "1d0c34025bc88a00015f5322acbb9665a7cfbc94",
+                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/8c183de87eb1ad5620fb2e8cf4800823c7a14595",
+                "reference": "8c183de87eb1ad5620fb2e8cf4800823c7a14595",
                 "shasum": ""
             },
             "require": {
@@ -2237,7 +2237,7 @@
                 }
             ],
             "description": "Syrup ComponentBundle",
-            "time": "2014-10-23 16:06:30"
+            "time": "2014-10-27 14:16:58"
         },
         {
             "name": "twig/twig",
@@ -2669,8 +2669,6 @@
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
-    "platform": {
-        "php": ">=5.4.0"
-    },
+    "platform": [],
     "platform-dev": []
 }

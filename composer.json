@@ -16,9 +16,8 @@
 		}
     ],
     "require": {
-        "php": ">=5.3.5",
 		"keboola/google-client-bundle": "1.1.*",
-        "keboola/syrup": "~1.3.0"
+        "syrup/component-bundle": "~1.9.16"
     },
     "require-dev": {
 		"phpunit/phpunit": "3.7.*"
