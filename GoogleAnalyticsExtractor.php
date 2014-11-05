@@ -35,10 +35,10 @@ class GoogleAnalyticsExtractor extends Component
 	{
 		if ($this->configuration == null) {
 			$this->configuration = new Configuration(
-				$this->storageApi,
 				$this->getFullName(),
 				$this->container->get('syrup.encryptor')
 			);
+			$this->configuration->setStorageApi($this->storageApi);
 		}
 		return $this->configuration;
 	}
