@@ -41,7 +41,10 @@ class MigrateConfigCommand extends ContainerAwareCommand
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$sapiToken = $input->getArgument('sapiToken');
-		$storageApi = new Client($sapiToken, null, $this->componentName);
+		$storageApi = new Client([
+			'token' => $sapiToken,
+			'userAgent' => $this->componentName
+		]);
 
 		$encryptionKey = $input->getArgument('encryptionKey');
 		$encryptor = new Encryptor($encryptionKey);
@@ -114,16 +117,30 @@ class MigrateConfigCommand extends ContainerAwareCommand
 			'visitorAgeBracket'  => 'userAgeBracket'
 		);
 
-		foreach ($config as $accountName => $cfg) {
+		foreach ($config as $tableName => $cfg) {
+			if (strstr($tableName, '-new') !== false) {
+				continue;
+			}
+
+			$tableRename = false;
+
 			foreach ($cfg['metrics'] as $k => $v) {
 				if (array_key_exists($v, $map)) {
-					$config[$accountName]['metrics'][$k] = $map[$v];
+					$tableRename = true;
+					$config[$tableName]['metrics'][$k] = $map[$v];
 				}
 			}
 			foreach ($cfg['dimensions'] as $k => $v) {
 				if (array_key_exists($v, $map)) {
-					$config[$accountName]['dimensions'][$k] = $map[$v];
+					$tableRename = true;
+					$config[$tableName]['dimensions'][$k] = $map[$v];
 				}
+			}
+
+			if ($tableRename) {
+				$newTableName = $tableName . '-new';
+				$config[$newTableName] = $config[$tableName];
+				unset($config[$tableName]);
 			}
 		}
 
