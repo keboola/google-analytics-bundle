@@ -74,19 +74,23 @@ class Extractor
 		$dataset = isset($options['dataset'])?$options['dataset']:null;
 
 		if (isset($options['account'])) {
-			if (isset($accounts[$options['account']])) {
-				$accounts = array(
-					$options['account'] => $accounts[$options['account']]
-				);
+			if (!isset($accounts[$options['account']])) {
+				throw new UserException(sprintf("Account '%s' does not exist.", $options['account']));
 			}
+
+			$accounts = array(
+				$options['account'] => $accounts[$options['account']]
+			);
 		}
 
 		if (isset($options['config'])) {
-			if (isset($accounts[$options['config']])) {
-				$accounts = array(
-					$options['config'] => $accounts[$options['config']]
-				);
+			if (!isset($accounts[$options['config']])) {
+				throw new UserException(sprintf("Config '%s' does not exist.", $options['config']));
 			}
+
+			$accounts = array(
+				$options['config'] => $accounts[$options['config']]
+			);
 		}
 
 		/** @var Account $account */

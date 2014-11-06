@@ -17,7 +17,7 @@
     ],
     "require": {
 		"keboola/google-client-bundle": "1.1.*",
-        "syrup/component-bundle": "~1.9.16"
+        "syrup/component-bundle": "dev-master"
     },
     "require-dev": {
 		"phpunit/phpunit": "3.7.*"
