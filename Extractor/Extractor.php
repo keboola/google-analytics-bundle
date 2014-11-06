@@ -132,16 +132,8 @@ class Extractor
 					$antisampling = isset($cfg['antisampling'])?$cfg['antisampling']:false;
 
 					$status[$accountId][$profile->getName()][$tableName] = 'ok';
-					try {
-						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
-					} catch (\Exception $e) {
-						$status[$accountId][$profile->getName()][$tableName] = array('error' => $e->getMessage());
-						$this->logger->warn("Import warning", array(
-							'account'   => $account->getAccountId(),
-							'profile'   => $profile->getProfileId(),
-							'exception' => $e
-						));
-					}
+
+					$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
 				}
 			}
 
@@ -224,7 +216,7 @@ class Extractor
 	protected function getOutputCsv($tableName, Profile $profile)
 	{
 		$fileName = str_replace(' ', '-', $tableName)
-			. '-' . str_replace('/', '', $profile->getName())
+			. '-' . str_replace('/', '', $profile->getGoogleId())
 			. "-" . microtime()
 			. "-" . uniqid("", true)
 			. ".csv";
