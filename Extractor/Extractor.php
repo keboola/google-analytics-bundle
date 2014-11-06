@@ -8,6 +8,7 @@
 
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
+use Guzzle\Http\Exception\ClientErrorResponseException;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
@@ -16,6 +17,7 @@ use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Monolog\Logger;
 use Syrup\ComponentBundle\Exception\ApplicationException;
+use Syrup\ComponentBundle\Exception\UserException;
 use Syrup\ComponentBundle\Filesystem\Temp;
 
 class Extractor
@@ -133,7 +135,16 @@ class Extractor
 
 					$status[$accountId][$profile->getName()][$tableName] = 'ok';
 
-					$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
+					try {
+						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
+					} catch (ClientErrorResponseException $e) {
+						if ($e->getCode() == 403) {
+							throw new UserException("You don't have access to resource. Check you access permissions.", $e);
+						}
+
+						throw $e;
+					}
+
 				}
 			}
 
