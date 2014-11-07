@@ -132,7 +132,8 @@ class OauthController extends BaseController
 			/** @var EncryptorInterface $encryptor */
 			$encryptor = $this->get('syrup.encryptor');
 
-			$configuration = new Configuration($storageApi, 'ex-google-analytics', $encryptor);
+			$configuration = new Configuration('ex-google-analytics', $encryptor);
+			$configuration->setStorageApi($storageApi);
 
 			$tokens = $googleApi->authorize($code, $this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL));
 
@@ -164,7 +165,7 @@ class OauthController extends BaseController
 				return new JsonResponse(array('status' => 'ok'));
 			}
 		} catch (\Exception $e) {
-			throw new ApplicationException('Could not save API tokens');
+			throw new ApplicationException('Could not save API tokens', $e);
 		}
 	}
 

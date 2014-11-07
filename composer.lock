@@ -2189,12 +2189,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup-component-bundle.git",
-                "reference": "f51b59e8669a9a900fe6dbb2a69b89944944ef07"
+                "reference": "2c0225a83c0864e344fdbba99581c20c0d6408aa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/f51b59e8669a9a900fe6dbb2a69b89944944ef07",
-                "reference": "f51b59e8669a9a900fe6dbb2a69b89944944ef07",
+                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/2c0225a83c0864e344fdbba99581c20c0d6408aa",
+                "reference": "2c0225a83c0864e344fdbba99581c20c0d6408aa",
                 "shasum": ""
             },
             "require": {
@@ -2205,7 +2205,7 @@
                 "keboola/php-encryption": "~0.2.0",
                 "keboola/php-temp": ">=0.1.0",
                 "keboola/storage-api-client": "~2.11.0",
-                "keboola/syrup": "~1.6.4",
+                "keboola/syrup": "~1.6.7",
                 "php": ">=5.3.5",
                 "pimple/pimple": "2.0.*",
                 "sensio/generator-bundle": "~2.3"
@@ -2237,7 +2237,7 @@
                 }
             ],
             "description": "Syrup ComponentBundle",
-            "time": "2014-11-06 13:38:11"
+            "time": "2014-11-06 17:18:44"
         },
         {
             "name": "twig/twig",
