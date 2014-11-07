@@ -157,10 +157,11 @@ class OauthController extends BaseController
 				->setEmail($userEmail)
 				->setAccessToken($tokens['access_token'])
 				->setRefreshToken($tokens['refresh_token'])
+				->setOwner($tokenData['description'])
 			;
 
-			if (!$account->isExternal()) {
-				$account->setOwner($tokenData['description']);
+			if ($account->isExternal()) {
+				$account->setOwner($tokenData['creatorToken']['description']);
 			}
 
 			$account->save();
