@@ -254,6 +254,11 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($profiles);
 	}
 
+	public function testGetProfiles()
+	{
+		// @todo
+	}
+
 	/**
 	 * External
 	 */

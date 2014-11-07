@@ -66,10 +66,11 @@ class GoogleAnalyticsExtractor extends Component
 	protected function getApi(Account $account)
 	{
 		/** @var RestApi $gaApi */
-		$gaApi = $this->container->get('ex_google_analytics_rest_api');
+		$gaApi = $this->container->get('ex_google_analytics.rest_api');
 		$gaApi->getApi()->setCredentials($account->getAccessToken(), $account->getRefreshToken());
 
-		$this->extractor = new Extractor($gaApi, $this->getConfiguration(), $this->getTemp(), $this->log);
+		$this->extractor = new Extractor($gaApi, $this->log, $this->getTemp());
+		$this->extractor->setConfiguration($this->getConfiguration());
 		$this->extractor->setCurrAccountId($account->getAccountId());
 
 		$gaApi->getApi()->setRefreshTokenCallback(array($this->extractor, 'refreshTokenCallback'));
