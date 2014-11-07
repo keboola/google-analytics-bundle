@@ -31,7 +31,7 @@ class GoogleAnalyticsExtractor extends Component
 	/**
 	 * @return Configuration
 	 */
-	protected function getConfiguration()
+	public function getConfiguration()
 	{
 		if ($this->configuration == null) {
 			$this->configuration = new Configuration(

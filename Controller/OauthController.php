@@ -128,6 +128,7 @@ class OauthController extends BaseController
 				'token'     => $token,
 				'userAgent' => 'ex-google-analytics'
 			]);
+			$tokenData = $storageApi->verifyToken();
 
 			/** @var EncryptorInterface $encryptor */
 			$encryptor = $this->get('syrup.encryptor');
@@ -151,12 +152,14 @@ class OauthController extends BaseController
 			$userEmail = isset($userData['email'])?$userData['email']:$userData['emails'][0]['value'];
 
 			$account
+				->setOwner($tokenData['owner']['name'])
 				->setGoogleId($userData['id'])
 				->setGoogleName($userName)
 				->setEmail($userEmail)
 				->setAccessToken($tokens['access_token'])
 				->setRefreshToken($tokens['refresh_token'])
 			;
+
 			$account->save();
 
 			if ($referrer) {

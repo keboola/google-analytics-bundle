@@ -7,6 +7,7 @@
 
 namespace Keboola\Google\AnalyticsBundle\Controller;
 
+use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\GoogleAnalyticsExtractor;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,6 +42,11 @@ class GoogleAnalyticsController extends ApiController
 		$token = $this->getComponent()->getToken();
 
 		$referrer = $post['referrer'] . '?token=' . $token['token'] .'&account=' . $post['account'];
+
+		/** @var Account $account */
+		$account = $this->getComponent()->getConfiguration()->getAccountBy('accountId', $post['account']);
+		$account->setExternal(true);
+		$account->save();
 
 		$url = $this->generateUrl('keboola_google_analytics_external_auth', array(
 			'token'     => $token['token'],
