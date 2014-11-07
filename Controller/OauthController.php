@@ -152,7 +152,7 @@ class OauthController extends BaseController
 			$userEmail = isset($userData['email'])?$userData['email']:$userData['emails'][0]['value'];
 
 			$account
-				->setOwner($tokenData['owner']['name'])
+				->setOwner($tokenData['description'])
 				->setGoogleId($userData['id'])
 				->setGoogleName($userName)
 				->setEmail($userEmail)
