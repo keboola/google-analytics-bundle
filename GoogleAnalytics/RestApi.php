@@ -83,8 +83,8 @@ class RestApi
 
 		$parameters['start-date'] = $startDate;
 
-		if($endDate==null) {
-			$endDate=date('Y-m-d');
+		if($endDate == null) {
+			$endDate = date('Y-m-d');
 		}
 
 		$parameters['end-date'] = $endDate;
@@ -92,12 +92,8 @@ class RestApi
 		$parameters['max-results'] = $maxResults;
 		$parameters['prettyprint'] = true;
 
-		/** @var Request $request */
-		$request = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'));
-		foreach ($parameters as $k => $v) {
-			$request->getQuery()->add($k, $v);
-		}
-		$response = $request->send();
+		$response = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'), $parameters);
+
 		$result = $this->_mapDataResult($response->json());
 
 		if ($result != false) {
@@ -121,11 +117,8 @@ class RestApi
 			'max-results'	=> $maxResults
 		);
 
-		$request = $this->api->request(self::ACCOUNTS_URL, 'GET');
-		foreach ($params as $k => $v) {
-			$request->getQuery()->add($k, $v);
-		}
-		$response = $request->send();
+		$response = $this->api->request(self::ACCOUNTS_URL, 'GET', $params);
+
 		$result = $response->json();
 
 		if (isset($result['items'])) {
@@ -148,12 +141,8 @@ class RestApi
 			'max-results'	=> $maxResults
 		);
 		$url = self::ACCOUNTS_URL . '/' . $accountId . '/webproperties';
-		$request = $this->api->request($url, 'GET');
-		foreach ($params as $k => $v) {
-			$request->getQuery()->add($k, $v);
-		}
+		$response = $this->api->request($url, 'GET', $params);
 
-		$response = $request->send();
 		$result = $response->json();
 
 		if (isset($result['items'])) {
@@ -178,12 +167,8 @@ class RestApi
 		);
 
 		$url = self::ACCOUNTS_URL . '/'	. $accountId . '/webproperties/' . $webpropertyId . '/profiles';
-		$request = $this->api->request($url, 'GET');
-		foreach ($params as $k => $v) {
-			$request->getQuery()->add($k, $v);
-		}
+		$response = $this->api->request($url, 'GET', $params);
 
-		$response = $request->send();
 		$result = $response->json();
 
 		if (isset($result['items'])) {
@@ -191,26 +176,6 @@ class RestApi
 		}
 
 		return array();
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function getGoals($accountId, $webpropertyId, $profileId, $startIndex=1, $maxResults=1000)
-	{
-		$get = array(
-			'start-index' => $startIndex,
-			'max-results'	=> $maxResults
-		);
-
-		$url = self::ACCOUNTS_URL . '/'	. $accountId . '/webproperties/' . $webpropertyId . '/profiles/' . $profileId . '/goals';
-		$body = $this->call($url, null, 'GET', $get);
-
-		if (isset($body['items'])) {
-			return $body['items'];
-		}
-
-		return false;
 	}
 
 	/**

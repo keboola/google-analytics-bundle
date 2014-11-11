@@ -8,7 +8,8 @@
 
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
-use Guzzle\Http\Exception\BadResponseException;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Message\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
@@ -44,6 +45,19 @@ class Extractor
 		$this->gaApi = $gaApi;
 		$this->temp = $temp;
 		$this->logger = $logger;
+
+//		$this->gaApi->getApi()->setBackoffCallback403($this->getBackoffCallback403());
+	}
+
+	public function getBackoffCallback403()
+	{
+		/** @var Response $response */
+		return function ($response) {
+			$responseContent = $response->getBody()->getContents();
+
+//			@todo
+//			var_dump($responseContent); die;
+		};
 	}
 
 	public function setConfiguration($configuration)
@@ -250,3 +264,4 @@ class Extractor
 		return $outputBucket . '.' . $tableName;
 	}
 }
+
