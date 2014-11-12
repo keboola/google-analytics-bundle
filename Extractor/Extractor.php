@@ -157,7 +157,10 @@ class Extractor
 						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
 					} catch (BadResponseException $e) {
 						if ($e->getCode() == 403) {
-							throw new UserException("You don't have access to resource. Check you access permissions.", $e);
+
+							$url = $e->getResponse()->getEffectiveUrl();
+
+							throw new UserException("You don't have access to Google Analytics resource '".$url."'. Check you access permissions.", $e);
 						}
 
 						throw $e;
