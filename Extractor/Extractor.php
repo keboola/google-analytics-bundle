@@ -46,17 +46,16 @@ class Extractor
 		$this->temp = $temp;
 		$this->logger = $logger;
 
-//		$this->gaApi->getApi()->setBackoffCallback403($this->getBackoffCallback403());
+		$this->gaApi->getApi()->setBackoffCallback403($this->getBackoffCallback403());
 	}
 
 	public function getBackoffCallback403()
 	{
 		/** @var Response $response */
 		return function ($response) {
-			$responseContent = $response->getBody()->getContents();
+			$reason = $response->getReasonPhrase();
 
-//			@todo
-//			var_dump($responseContent); die;
+			return ($reason == 'userRateLimitExceeded' || $reason == 'quotaExceeded');
 		};
 	}
 
@@ -156,11 +155,21 @@ class Extractor
 					try {
 						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
 					} catch (BadResponseException $e) {
+
+						if ($e->getCode() == 401) {
+							throw new UserException("Expried or wrong credentials, please reauthorize.", $e);
+						}
+
 						if ($e->getCode() == 403) {
 
 							$url = $e->getResponse()->getEffectiveUrl();
 
-							throw new UserException("You don't have access to Google Analytics resource '".$url."'. Check you access permissions.", $e);
+							if (strtolower($e->getResponse()->getReasonPhrase()) == 'forbidden') {
+								throw new UserException("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.", $e);
+							} else {
+								throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
+							}
+
 						}
 
 						throw $e;

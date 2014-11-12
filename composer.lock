@@ -1181,12 +1181,12 @@
         },
         {
             "name": "keboola/google-client-bundle",
-            "version": "2.0.2",
+            "version": "2.0.4",
             "target-dir": "Keboola/Google/ClientBundle",
             "source": {
                 "type": "git",
                 "url": "git@bitbucket.org:keboola/google-client-bundle.git",
-                "reference": "4918d1ee58f70cf76baa484ab95a6ee46ab4ddd0"
+                "reference": "8324a0ed4b695f482eecf074f25cad5b81d54a88"
             },
             "require": {
                 "guzzlehttp/guzzle": "~4.0",
@@ -1212,7 +1212,7 @@
                 "keboola",
                 "rest"
             ],
-            "time": "2014-11-11 13:55:11"
+            "time": "2014-11-12 14:06:23"
         },
         {
             "name": "keboola/php-encryption",
@@ -2173,17 +2173,17 @@
         },
         {
             "name": "syrup/component-bundle",
-            "version": "1.9.29",
+            "version": "1.9.31",
             "target-dir": "Syrup/ComponentBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup-component-bundle.git",
-                "reference": "f0e372d563fe846551f98f7f87f9db9531678ac5"
+                "reference": "cd774bcb0c412fa87530e718402990a2020b8693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/f0e372d563fe846551f98f7f87f9db9531678ac5",
-                "reference": "f0e372d563fe846551f98f7f87f9db9531678ac5",
+                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/cd774bcb0c412fa87530e718402990a2020b8693",
+                "reference": "cd774bcb0c412fa87530e718402990a2020b8693",
                 "shasum": ""
             },
             "require": {
@@ -2224,7 +2224,7 @@
                 }
             ],
             "description": "Syrup ComponentBundle",
-            "time": "2014-11-11 16:00:53"
+            "time": "2014-11-12 14:29:57"
         },
         {
             "name": "twig/twig",
