@@ -1311,16 +1311,16 @@
         },
         {
             "name": "keboola/storage-api-client",
-            "version": "2.11.26",
+            "version": "2.11.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/storage-api-php-client.git",
-                "reference": "28eb3bb0ee18f754017e9290166368e1f02b65a2"
+                "reference": "a8e8239d3225ca5e63df98dbe1b0386a582ddde2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/28eb3bb0ee18f754017e9290166368e1f02b65a2",
-                "reference": "28eb3bb0ee18f754017e9290166368e1f02b65a2",
+                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/a8e8239d3225ca5e63df98dbe1b0386a582ddde2",
+                "reference": "a8e8239d3225ca5e63df98dbe1b0386a582ddde2",
                 "shasum": ""
             },
             "require": {
@@ -1347,7 +1347,7 @@
             ],
             "description": "Keboola Storage API PHP CLient",
             "homepage": "http://keboola.com",
-            "time": "2014-11-10 12:56:45"
+            "time": "2014-11-12 15:06:40"
         },
         {
             "name": "keboola/syrup",
@@ -2173,17 +2173,17 @@
         },
         {
             "name": "syrup/component-bundle",
-            "version": "1.9.31",
+            "version": "1.9.36",
             "target-dir": "Syrup/ComponentBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup-component-bundle.git",
-                "reference": "cd774bcb0c412fa87530e718402990a2020b8693"
+                "reference": "b3a5a2bbbc9cbb12bbd1c14b11e6a19615642d2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/cd774bcb0c412fa87530e718402990a2020b8693",
-                "reference": "cd774bcb0c412fa87530e718402990a2020b8693",
+                "url": "https://api.github.com/repos/keboola/syrup-component-bundle/zipball/b3a5a2bbbc9cbb12bbd1c14b11e6a19615642d2c",
+                "reference": "b3a5a2bbbc9cbb12bbd1c14b11e6a19615642d2c",
                 "shasum": ""
             },
             "require": {
@@ -2224,7 +2224,7 @@
                 }
             ],
             "description": "Syrup ComponentBundle",
-            "time": "2014-11-12 14:29:57"
+            "time": "2014-11-18 12:12:37"
         },
         {
             "name": "twig/twig",

@@ -46,6 +46,7 @@ class Extractor
 		$this->temp = $temp;
 		$this->logger = $logger;
 
+		$this->gaApi->getApi()->setBackoffsCount(7);
 		$this->gaApi->getApi()->setBackoffCallback403($this->getBackoffCallback403());
 	}
 
