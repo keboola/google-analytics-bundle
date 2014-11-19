@@ -9,6 +9,7 @@
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
@@ -155,7 +156,7 @@ class Extractor
 
 					try {
 						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
-					} catch (BadResponseException $e) {
+					} catch (RequestException $e) {
 
 						if ($e->getCode() == 401) {
 							throw new UserException("Expried or wrong credentials, please reauthorize.", $e);
@@ -173,9 +174,8 @@ class Extractor
 
 						}
 
-						throw $e;
+						throw new ApplicationException($e->getResponse()->getBody(), $e);
 					}
-
 				}
 			}
 
