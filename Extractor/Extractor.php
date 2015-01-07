@@ -138,44 +138,45 @@ class Extractor
 
 				$profilesCsv->writeRow(array($profile->getGoogleId(), $profile->getName()));
 
-				foreach ($account->getConfiguration() as $tableName => $cfg) {
+				try {
 
-					// Download just the dataset specified in request
-					if ($dataset != null && $dataset != $tableName) {
-						continue;
-					}
+					foreach ($account->getConfiguration() as $tableName => $cfg) {
 
-					// Download dataset only for specific profile
-					if (isset($cfg['profile']) && $cfg['profile'] != $profile->getGoogleId()) {
-						continue;
-					}
+						// Download just the dataset specified in request
+						if ($dataset != null && $dataset != $tableName) {
+							continue;
+						}
 
-					$antisampling = isset($cfg['antisampling'])?$cfg['antisampling']:false;
+						// Download dataset only for specific profile
+						if (isset($cfg['profile']) && $cfg['profile'] != $profile->getGoogleId()) {
+							continue;
+						}
 
-					$status[$accountId][$profile->getName()][$tableName] = 'ok';
+						$antisampling = isset($cfg['antisampling'])?$cfg['antisampling']:false;
 
-					try {
 						$this->getData($account, $profile, $tableName, $dateFrom, $dateTo, $antisampling);
-					} catch (RequestException $e) {
 
-						if ($e->getCode() == 401) {
-							throw new UserException("Expried or wrong credentials, please reauthorize.", $e);
-						}
-
-						if ($e->getCode() == 403) {
-
-							$url = $e->getResponse()->getEffectiveUrl();
-
-							if (strtolower($e->getResponse()->getReasonPhrase()) == 'forbidden') {
-								throw new UserException("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.", $e);
-							} else {
-								throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
-							}
-
-						}
-
-						throw new ApplicationException($e->getResponse()->getBody(), $e);
+						$status[$accountId][$profile->getName()][$tableName] = 'ok';
 					}
+
+				} catch (RequestException $e) {
+
+					if ($e->getCode() == 401) {
+						throw new UserException("Expried or wrong credentials, please reauthorize.", $e);
+					}
+
+					if ($e->getCode() == 403) {
+						$url = $e->getResponse()->getEffectiveUrl();
+
+						if (strtolower($e->getResponse()->getReasonPhrase()) == 'forbidden') {
+							$this->logger->warn("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.");
+							continue;
+						} else {
+							throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
+						}
+					}
+
+					throw new ApplicationException($e->getResponse()->getBody(), $e);
 				}
 			}
 

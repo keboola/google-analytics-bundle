@@ -9,6 +9,7 @@
 namespace Keboola\Google\AnalyticsBundle\GoogleAnalytics;
 
 use Guzzle\Http\Message\Request;
+use GuzzleHttp\Exception\RequestException;
 use Keboola\Google\ClientBundle\Google\RestApi as GoogleApi;
 
 class RestApi
@@ -189,17 +190,23 @@ class RestApi
 		$webProperties = array();
 		if ($this->getAccounts()) {
 			foreach($this->getAccounts() as $account) {
-				if ($this->getWebProperties($account['id'])) {
-					$webProperties[$account['name']] = $this->getWebProperties($account['id']);
-				}
+				$webProperties[$account['name']] = $this->getWebProperties($account['id']);
 			}
 		}
 
 		foreach($webProperties as $accountName => $wps) {
 			foreach($wps as $wp) {
-				$ps = $this->getProfiles($wp['accountId'], $wp['id']);
-				if ($ps) {
-					$profiles[$accountName][$wp['id']] = $ps;
+				try {
+					$ps = $this->getProfiles($wp['accountId'], $wp['id']);
+					if (!empty($ps)) {
+						$profiles[$accountName][$wp['id']] = $ps;
+					}
+				} catch (RequestException $e) {
+					if ($e->getCode() == 403) {
+						// permissions changed - do nothing
+					} else {
+						throw $e;
+					}
 				}
 			}
 		}
