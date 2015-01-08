@@ -9,13 +9,13 @@
 namespace Keboola\Google\AnalyticsBundle\Exception;
 
 
-use Syrup\ComponentBundle\Exception\SyrupComponentException;
+use Syrup\ComponentBundle\Exception\UserException;
 
-class ParameterMissingException extends SyrupComponentException
+class ParameterMissingException extends UserException
 {
 	public function __construct($message)
 	{
-		parent::__construct(400, $message);
+		parent::__construct($message);
 	}
 
 }

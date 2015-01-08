@@ -9,12 +9,12 @@
 namespace Keboola\Google\AnalyticsBundle\Exception;
 
 
-use Syrup\ComponentBundle\Exception\SyrupComponentException;
+use Syrup\ComponentBundle\Exception\UserException;
 
-class ConfigurationException extends SyrupComponentException
+class ConfigurationException extends UserException
 {
 	public function __construct($message)
 	{
-		parent::__construct(400, "Wrong configuration: " . $message);
+		parent::__construct("Wrong configuration: " . $message);
 	}
 }

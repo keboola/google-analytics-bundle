@@ -92,6 +92,7 @@ class RestApi
 		$parameters['start-index'] = $startIndex;
 		$parameters['max-results'] = $maxResults;
 		$parameters['prettyprint'] = true;
+		$parameters['samplingLevel'] = 'HIGHER_PRECISION';
 
 		$response = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'), $parameters);
 
@@ -199,7 +200,7 @@ class RestApi
 				try {
 					$ps = $this->getProfiles($wp['accountId'], $wp['id']);
 					if (!empty($ps)) {
-						$profiles[$accountName][$wp['id']] = $ps;
+						$profiles[$accountName][$wp['name']] = $ps;
 					}
 				} catch (RequestException $e) {
 					if ($e->getCode() == 403) {
