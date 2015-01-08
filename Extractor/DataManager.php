@@ -12,7 +12,9 @@ use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\Result;
+use Keboola\StorageApi\ClientException;
 use Keboola\StorageApi\Table;
+use Syrup\ComponentBundle\Exception\UserException;
 use Syrup\ComponentBundle\Filesystem\Temp;
 
 class DataManager
@@ -66,7 +68,13 @@ class DataManager
 		$sapi = $this->configuration->getStorageApi();
 
 		$table = new Table($sapi, $tableId, $file, 'id', false, ',', '"', $incremental);
-		$table->save(true);
+
+		try {
+			$table->save(true);
+		} catch (ClientException $e) {
+			throw new UserException('Error while uploading data to StorageAPI: ' . $e->getMessage(), $e);
+		}
+
 	}
 
 }
