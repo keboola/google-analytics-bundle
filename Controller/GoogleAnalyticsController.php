@@ -182,7 +182,7 @@ class GoogleAnalyticsController extends ApiController
 			throw new UserException("Account '" . $id . "' not found");
 		}
 
-		if (isset($account['items']) && !empty($account['items'])) {
+		if (isset($account->toArray()['items']) && !empty($account->toArray()['items'])) {
 
 			// this will get addtitional info from Google GA API if needed
 			if (!isset($account->toArray()['items'][0]['accountName'])
