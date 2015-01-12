@@ -292,7 +292,9 @@ class GoogleAnalyticsController extends ApiController
 			throw new UserException("Account '".$accountId."' not found");
 		}
 
-		foreach ($this->getPostJson($request) as $profile) {
+		$profiles = $this->getPostJson($request);
+
+		foreach ($profiles as $profile) {
 			$this->checkParams(array(
 				'name',
 				'googleId',
@@ -301,9 +303,10 @@ class GoogleAnalyticsController extends ApiController
 				'accountId',
 				'accountName'
 			), $profile);
-
-			$this->getConfiguration()->addProfile($account, $profile);
 		}
+
+		$account->setProfilesFromArray($profiles);
+		$account->save();
 
 		return $this->createJsonResponse(['status' => 'ok']);
 	}
