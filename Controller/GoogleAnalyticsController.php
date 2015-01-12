@@ -182,29 +182,33 @@ class GoogleAnalyticsController extends ApiController
 			throw new UserException("Account '" . $id . "' not found");
 		}
 
-		// this will get addtitional info from Google GA API if needed
-		if (!isset($account->toArray()['items'][0]['accountName'])
-			|| empty($account->toArray()['items'][0]['accountName']))
-		{
-			$profiles = $this->getApi($account)->getAllProfiles();
+		if (isset($account['items']) && !empty($account['items'])) {
 
-			foreach ($account->getData() as $row) {
+			// this will get addtitional info from Google GA API if needed
+			if (!isset($account->toArray()['items'][0]['accountName'])
+				|| empty($account->toArray()['items'][0]['accountName']))
+			{
+				$profiles = $this->getApi($account)->getAllProfiles();
 
-				foreach ($profiles as $accName => $webProperties) {
+				foreach ($account->getData() as $row) {
 
-					foreach ($webProperties as $webPropertyName => $prfs) {
+					foreach ($profiles as $accName => $webProperties) {
 
-						foreach ($prfs as $pr) {
+						foreach ($webProperties as $webPropertyName => $prfs) {
 
-							if ($pr['id'] == $row['googleId']) {
-								$account->addProfile(new Profile([
-									'googleId'          => $pr['id'],
-									'name'              => $pr['name'],
-									'webPropertyId'     => $pr['webPropertyId'],
-									'webPropertyName'   => $webPropertyName,
-									'accountId'         => $pr['accountId'],
-									'accountName'       => $accName
-								]));
+							foreach ($prfs as $pr) {
+
+								if ($pr['id'] == $row['googleId']) {
+									$account->addProfile(new Profile([
+										'googleId'          => $pr['id'],
+										'name'              => $pr['name'],
+										'webPropertyId'     => $pr['webPropertyId'],
+										'webPropertyName'   => $webPropertyName,
+										'accountId'         => $pr['accountId'],
+										'accountName'       => $accName
+									]));
+								}
+
 							}
 
 						}
@@ -213,9 +217,8 @@ class GoogleAnalyticsController extends ApiController
 
 				}
 
+				$account->save();
 			}
-
-			$account->save();
 		}
 
 		return $this->createJsonResponse($account->toArray());

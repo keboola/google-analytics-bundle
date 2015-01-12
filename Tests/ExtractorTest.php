@@ -264,6 +264,12 @@ class ExtractorTest extends WebTestCase
 		$profiles = $account->getProfiles();
 
 		$this->assertNotEmpty($profiles);
+		$this->assertCount(1, $profiles);
+
+		/** @var Profile $profile */
+		$profile = $profiles[0];
+		$this->assertEquals('987654321', $profile->getGoogleId());
+		$this->assertEquals('testProfile', $profile->getName());
 	}
 
 	public function testGetProfiles()
