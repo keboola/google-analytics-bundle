@@ -15,7 +15,9 @@ class Profile
 	protected $googleId;
 	protected $name;
 	protected $accountId;
+	protected $accountName;
 	protected $webPropertyId;
+	protected $webPropertyName;
 
 	/** @var Account */
 	protected $account;
@@ -81,6 +83,17 @@ class Profile
 		return $this->accountId;
 	}
 
+	public function setAccountName($name)
+	{
+		$this->accountName = $name;
+		return $this;
+	}
+
+	public function getAccountName()
+	{
+		return $this->accountName;
+	}
+
 	public function setWebPropertyId($id)
 	{
 		$this->webPropertyId = $id;
@@ -90,6 +103,17 @@ class Profile
 	public function getWebPropertyId()
 	{
 		return $this->webPropertyId;
+	}
+
+	public function setWebPropertyName($name)
+	{
+		$this->webPropertyName = $name;
+		return $this;
+	}
+
+	public function getWebPropertyName()
+	{
+		return $this->webPropertyName;
 	}
 
 	public function fromArray(array $data)
@@ -107,8 +131,10 @@ class Profile
 			'profileId' => $this->profileId,
 			'googleId'  => $this->googleId,
 			'name'      => $this->name,
-			'webPropertyId' => $this->webPropertyId,
-			'accountId' => $this->accountId
+			'webPropertyId'     => $this->webPropertyId,
+			'webPropertyName'   => $this->webPropertyName,
+			'accountId'     => $this->accountId,
+			'accountName'   => $this->accountName
 		);
 	}
 }

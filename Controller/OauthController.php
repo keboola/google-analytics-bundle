@@ -176,8 +176,12 @@ class OauthController extends BaseController
 			} else {
 				return new JsonResponse(array('status' => 'ok'));
 			}
+		} catch (ClientException $e) {
+			// SAPI exception - probably invalid access token
+			throw new UserException($e->getMessage());
 		} catch (\Exception $e) {
-			throw new ApplicationException('Could not save API tokens', $e);
+			// any other exception
+			throw new ApplicationException('Error finishing authorization: ' . $e->getMessage(), $e);
 		}
 	}
 

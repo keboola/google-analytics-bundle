@@ -2,6 +2,7 @@
 
 namespace Keboola\Google\AnalyticsBundle\Tests;
 
+use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\StorageApi\Client as SapiClient;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -78,6 +79,15 @@ class ExtractorTest extends WebTestCase
 		$account->setAccessToken('accessToken');
 		$account->setRefreshToken('refreshToken');
 		$account->setConfiguration(json_decode($account->getDefaultConfiguration(), true));
+
+		$account->addProfile(new Profile([
+			'googleId'          => '12345',
+			'name'              => 'testProfile',
+			'webPropertyId'     => 'test-12345-test',
+			'webPropertyName'   => 'testWebProperty',
+			'accountId'         => '123456',
+			'accountName'       => 'googleTestAccount'
+		]));
 
 		$account->save();
 	}
@@ -236,8 +246,10 @@ class ExtractorTest extends WebTestCase
 				array(
 					'googleId'      => '987654321',
 					'accountId'     => '567890',
+					'accountName'   => 'accountTest',
 					'name'          => 'testProfile',
-					'webPropertyId' => 'web-property-id'
+					'webPropertyId' => 'web-property-id',
+					'webPropertyName' => 'web-property-name'
 				)
 			))
 		);

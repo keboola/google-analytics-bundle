@@ -185,14 +185,16 @@ class RestApi
 	 *
 	 * @return array account -> profiles[]
 	 */
-	public function getAllProfiles()
+	public function getAllProfiles($accountId = null)
 	{
 		$profiles = array();
 		$webProperties = array();
-		if ($this->getAccounts()) {
-			foreach($this->getAccounts() as $account) {
-				$webProperties[$account['name']] = $this->getWebProperties($account['id']);
+
+		foreach($this->getAccounts() as $account) {
+			if ($accountId != null && $account['id'] != $accountId) {
+				continue;
 			}
+			$webProperties[$account['name']] = $this->getWebProperties($account['id']);
 		}
 
 		foreach($webProperties as $accountName => $wps) {

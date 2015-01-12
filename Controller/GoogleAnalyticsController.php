@@ -7,7 +7,9 @@
 
 namespace Keboola\Google\AnalyticsBundle\Controller;
 
+use GuzzleHttp\Exception\RequestException;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
+use Keboola\Google\AnalyticsBundle\Entity\Profile;
 use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
 use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
@@ -65,6 +67,7 @@ class GoogleAnalyticsController extends ApiController
 		$extractor->setCurrAccountId($account->getAccountId());
 
 		$gaApi->getApi()->setRefreshTokenCallback([$extractor, 'refreshTokenCallback']);
+		$gaApi->getApi()->setBackoffCallback403($extractor->getBackoffCallback403());
 
 		return $gaApi;
 	}
@@ -173,13 +176,49 @@ class GoogleAnalyticsController extends ApiController
 	 */
 	public function getAccountAction($id)
 	{
-		$account = $this->getConfiguration()->getAccountBy('accountId', $id, true);
+		$account = $this->getConfiguration()->getAccountBy('accountId', $id);
 
 		if ($account == null) {
 			throw new UserException("Account '" . $id . "' not found");
 		}
 
-		return $this->createJsonResponse($account);
+		// this will get addtitional info from Google GA API if needed
+		if (!isset($account->toArray()['items'][0]['accountName'])
+			|| empty($account->toArray()['items'][0]['accountName']))
+		{
+			$profiles = $this->getApi($account)->getAllProfiles();
+
+			foreach ($account->getData() as $row) {
+
+				foreach ($profiles as $accName => $webProperties) {
+
+					foreach ($webProperties as $webPropertyName => $prfs) {
+
+						foreach ($prfs as $pr) {
+
+							if ($pr['id'] == $row['googleId']) {
+								$account->addProfile(new Profile([
+									'googleId'          => $pr['id'],
+									'name'              => $pr['name'],
+									'webPropertyId'     => $pr['webPropertyId'],
+									'webPropertyName'   => $webPropertyName,
+									'accountId'         => $pr['accountId'],
+									'accountName'       => $accName
+								]));
+							}
+
+						}
+
+					}
+
+				}
+
+			}
+
+			$account->save();
+		}
+
+		return $this->createJsonResponse($account->toArray());
 	}
 
 	public function getAccountsAction()
@@ -236,7 +275,13 @@ class GoogleAnalyticsController extends ApiController
 			throw new UserException("Account '".$accountId."' not found");
 		}
 
-		return $this->createJsonResponse($this->getApi($account)->getAllProfiles());
+		try {
+			$profiles = $this->getApi($account)->getAllProfiles();
+		} catch (RequestException $e) {
+			throw new UserException("You don't have access to resource: " . $e->getResponse()->getEffectiveUrl(), $e);
+		}
+
+		return $this->createJsonResponse($profiles);
 	}
 
 	public function postProfilesAction($accountId, Request $request)
@@ -252,7 +297,9 @@ class GoogleAnalyticsController extends ApiController
 				'name',
 				'googleId',
 				'webPropertyId',
-				'accountId' // Accounts Google ID
+				'webPropertyName',
+				'accountId',
+				'accountName'
 			), $profile);
 
 			$this->getConfiguration()->addProfile($account, $profile);

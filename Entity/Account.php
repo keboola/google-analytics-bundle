@@ -13,7 +13,7 @@ use Keboola\StorageApi\Table;
 
 class Account extends Table
 {
-	protected $header = array('profileId', 'googleId', 'name', 'webPropertyId', 'accountId');
+	protected $header = array('profileId', 'googleId', 'name', 'webPropertyId', 'webPropertyName', 'accountId', 'accountName');
 
 	/** @var Configuration */
 	protected $configuration;
@@ -215,7 +215,7 @@ class Account extends Table
 
 		$profile->setProfileId($nextId);
 
-		$this->profiles[] = $profile;
+		$this->profiles[$nextId] = $profile;
 	}
 
 	public function getProfiles()
@@ -225,6 +225,7 @@ class Account extends Table
 
 	public function setProfilesFromArray($profiles)
 	{
+		$this->profiles = [];
 		foreach ($profiles as $profile) {
 			$this->profiles[] = new Profile($profile);
 		}
