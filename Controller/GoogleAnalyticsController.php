@@ -233,6 +233,7 @@ class GoogleAnalyticsController extends ApiController
 	{
 		$params = $this->getPostJson($request);
 
+		/** @var Account $account */
 		$account = $this->getConfiguration()->getAccountBy('accountId', $id);
 		if (null == $account) {
 			throw new UserException("Account '" . $params['id'] . "' not found");
@@ -255,6 +256,9 @@ class GoogleAnalyticsController extends ApiController
 		}
 		if (isset($params['configuration'])) {
 			$account->setConfiguration($params['configuration']);
+		}
+		if (isset($params['outputBucket'])) {
+			$account->setOutputBucket($params['outputBucket']);
 		}
 
 		$account->save();

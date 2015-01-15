@@ -110,7 +110,6 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($account['email']);
 		$this->assertNotEmpty($account['accessToken']);
 		$this->assertNotEmpty($account['refreshToken']);
-		$this->assertNotEmpty($account['configuration']);
 	}
 
 	/**

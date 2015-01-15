@@ -159,6 +159,12 @@ class Configuration
 		return $accounts;
 	}
 
+	/**
+	 * @param      $key
+	 * @param      $value
+	 * @param bool $asArray
+	 * @return array|Account|null
+	 */
 	public function getAccountBy($key, $value, $asArray = false)
 	{
 		$accounts = $this->getAccounts();

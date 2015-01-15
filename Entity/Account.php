@@ -158,7 +158,7 @@ class Account extends Table
 		$attributes = $this->getAttributes();
 		// set default configuration if not exists
 		if (!isset($attributes['configuration'])) {
-			$this->setAttribute('configuration', $this->getDefaultConfiguration());
+			$this->setAttribute('configuration', '{}');
 		}
 		return json_decode($this->getAttribute('configuration'), true);
 	}
@@ -190,6 +190,11 @@ class Account extends Table
 	public function isExternal()
 	{
 		return (bool) $this->getAttribute('external');
+	}
+
+	public function setOutputBucket($outputBucket)
+	{
+		$this->setAttribute('outputBucket', $outputBucket);
 	}
 
 	public function addProfile(Profile $profile)
@@ -288,6 +293,10 @@ class Account extends Table
 		}
 	}
 
+	/**
+	 * @deprecated
+	 * @return string
+	 */
 	public function getDefaultConfiguration()
 	{
 		return '{
@@ -301,5 +310,4 @@ class Account extends Table
 					}
 				}';
 	}
-
 }
