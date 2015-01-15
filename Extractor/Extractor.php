@@ -108,6 +108,10 @@ class Extractor
 			);
 		}
 
+		if ($dataset != null && !isset($options['config']) && !isset($options['account'])) {
+			throw new UserException("Missing parameter 'config'");
+		}
+
 		/** @var Account $account */
 		foreach ($accounts as $accountId => $account) {
 
@@ -139,13 +143,17 @@ class Extractor
 				$profilesCsv->writeRow(array($profile->getGoogleId(), $profile->getName()));
 
 				try {
+					$configuration = $account->getConfiguration();
 
-					foreach ($account->getConfiguration() as $tableName => $cfg) {
-
-						// Download just the dataset specified in request
-						if ($dataset != null && $dataset != $tableName) {
-							continue;
+					// Download just the dataset specified in request
+					if ($dataset != null) {
+						if (!isset($configuration[$dataset])) {
+							throw new UserException(sprintf("Dataset '%s' doesn't exist", $dataset));
 						}
+						$configuration = [$dataset => $configuration[$dataset]];
+					}
+
+					foreach ($configuration as $tableName => $cfg) {
 
 						// Download dataset only for specific profile
 						if (isset($cfg['profile']) && $cfg['profile'] != $profile->getGoogleId()) {
