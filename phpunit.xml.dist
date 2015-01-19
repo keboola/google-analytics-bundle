@@ -17,6 +17,7 @@
     <testsuites>
         <testsuite name="Keboola Google Analytics Extractor">
 			<file>Tests/ExtractorTest.php</file>
+            <file>Tests/MailerTest.php</file>
         </testsuite>
     </testsuites>
 </phpunit>
