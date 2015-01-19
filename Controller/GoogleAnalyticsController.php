@@ -15,6 +15,8 @@ use Keboola\Google\AnalyticsBundle\Exception\ParameterMissingException;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\Extractor\Extractor;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
+use Keboola\Google\AnalyticsBundle\Mailer\Mailer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Syrup\ComponentBundle\Controller\ApiController;
 use Syrup\ComponentBundle\Exception\UserException;
@@ -72,10 +74,11 @@ class GoogleAnalyticsController extends ApiController
 		return $gaApi;
 	}
 
+	/** External Authorization */
 
-	/** Tokens
+	/**
 	 * @param Request $request
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 * @return JsonResponse
 	 */
 	public function postExternalAuthLinkAction(Request $request)
 	{
@@ -109,8 +112,45 @@ class GoogleAnalyticsController extends ApiController
 		));
 	}
 
+	/**
+	 * Send authorization link by email
+	 *
+	 * Body params:
+	 *  - url - generated authorization link
+	 *  - user - user who generated the link
+	 *  - email - email address to send link to
+	 *  - message (optional) - senders message
+	 *
+	 * @param Request $request
+	 * @return JsonResponse
+	 */
+	public function postSendAuthLinkAction(Request $request)
+	{
+		$params = $this->getPostJson($request);
+
+		$this->checkParams(['url', 'user', 'email'], $params);
+
+		if (false === strstr($params['url'] ,"ex-google-analytics/external-auth")) {
+			throw new UserException(sprintf("URL provided is not right"));
+		}
+
+		/** @var Mailer $mailer */
+		$mailer = $this->container->get('ex_google_analytics.mailer');
+
+		$sendersMessage = isset($params['message'])?$params['message']:"";
+
+		$mailer->sendAuthorizationLink($params['user'], $params['url'], $params['email'], $sendersMessage);
+
+		return $this->createJsonResponse(array(
+			'status'  => 'ok'
+		));
+	}
+
 	/** Configs */
 
+	/**
+	 * @return JsonResponse
+	 */
 	public function getConfigsAction()
 	{
 		$accounts = $this->getConfiguration()->getAccounts(true);
@@ -127,6 +167,10 @@ class GoogleAnalyticsController extends ApiController
 		return $this->createJsonResponse($res);
 	}
 
+	/**
+	 * @param Request $request
+	 * @return JsonResponse
+	 */
 	public function postConfigsAction(Request $request)
 	{
 		$params = $this->getPostJson($request);
@@ -160,6 +204,10 @@ class GoogleAnalyticsController extends ApiController
 		));
 	}
 
+	/**
+	 * @param $id
+	 * @return JsonResponse
+	 */
 	public function deleteConfigAction($id)
 	{
 		$this->getConfiguration()->removeAccount($id);
@@ -172,7 +220,7 @@ class GoogleAnalyticsController extends ApiController
 
 	/**
 	 * @param $id
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 * @return JsonResponse
 	 */
 	public function getAccountAction($id)
 	{
@@ -271,7 +319,7 @@ class GoogleAnalyticsController extends ApiController
 
 	/**
 	 * @param $accountId
-	 * @return \Symfony\Component\HttpFoundation\JsonResponse
+	 * @return JsonResponse
 	 */
 	public function getProfilesAction($accountId)
 	{

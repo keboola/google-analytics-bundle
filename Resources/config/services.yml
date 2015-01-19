@@ -14,3 +14,7 @@ services:
     ex_google_analytics.configuration:
         class: Keboola\Google\AnalyticsBundle\Extractor\Configuration
         arguments: [%app_name%, @syrup.encryptor]
+
+    ex_google_analytics.mailer:
+        class: Keboola\Google\AnalyticsBundle\Mailer\Mailer
+        arguments: [@mailer, @templating]

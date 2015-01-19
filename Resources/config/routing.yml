@@ -19,6 +19,11 @@ keboola_google_analytics_post_external_auth_link:
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postExternalAuthLink }
     methods:  [POST]
 
+keboola_google_analytics_send_auth_link:
+    path: /send-external-link
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postSendAuthLink }
+    methods:  [POST]
+
 keboola_google_analytics_external_auth:
     path: /external-auth
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:externalAuth }
