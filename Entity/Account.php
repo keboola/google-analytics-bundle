@@ -246,6 +246,10 @@ class Account extends Table
 		}
 		unset($array['items']);
 
+		if (!isset($array['outputBucket'])) {
+			$this->setOutputBucket($this->configuration->getInBucketId($this->accountId));
+		}
+
 		foreach($array as $k => $v) {
 			$this->setAttribute($k, $v);
 		}

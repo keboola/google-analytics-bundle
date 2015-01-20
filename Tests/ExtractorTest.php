@@ -101,6 +101,7 @@ class ExtractorTest extends WebTestCase
 		$this->assertArrayHasKey('email', $account);
 		$this->assertArrayHasKey('accessToken', $account);
 		$this->assertArrayHasKey('refreshToken', $account);
+		$this->assertArrayHasKey('outputBucket', $account);
 		$this->assertArrayHasKey('configuration', $account);
 
 		$this->assertNotEmpty($account['accountId']);
@@ -110,6 +111,7 @@ class ExtractorTest extends WebTestCase
 		$this->assertNotEmpty($account['email']);
 		$this->assertNotEmpty($account['accessToken']);
 		$this->assertNotEmpty($account['refreshToken']);
+		$this->assertNotEmpty($account['outputBucket']);
 	}
 
 	/**
