@@ -55,10 +55,12 @@ class ExtractorTest extends WebTestCase
 
 		// Cleanup
 		$sysBucketId = $this->configuration->getSysBucketId();
-		$accTables = $this->storageApi->listTables($sysBucketId);
-		foreach ($accTables as $table) {
-			$this->storageApi->dropTable($table['id']);
+		$tableId = $sysBucketId . '.' . 'test';
+
+		if ($this->storageApi->tableExists($tableId)) {
+			$this->storageApi->dropTable($tableId);
 		}
+
 	}
 
 	protected function createConfig()
@@ -78,7 +80,6 @@ class ExtractorTest extends WebTestCase
 		$account->setEmail('test@keboola.com');
 		$account->setAccessToken('accessToken');
 		$account->setRefreshToken('refreshToken');
-		$account->setConfiguration(json_decode($account->getDefaultConfiguration(), true));
 
 		$account->addProfile(new Profile([
 			'googleId'          => '12345',
@@ -148,8 +149,16 @@ class ExtractorTest extends WebTestCase
 		$responseJson = self::$client->getResponse()->getContent();
 		$response = json_decode($responseJson, true);
 
-		$this->assertEquals('test', $response[0]['id']);
-		$this->assertEquals('Test', $response[0]['name']);
+		$testConfig = [];
+		foreach ($response as $config) {
+			if ($config['id'] == 'test') {
+				$testConfig = $config;
+				break;
+			}
+		}
+
+		$this->assertEquals('test', $testConfig['id']);
+		$this->assertEquals('Test', $testConfig['name']);
 	}
 
 	public function testDeleteConfig()
@@ -164,7 +173,7 @@ class ExtractorTest extends WebTestCase
 		$accounts = $this->configuration->getAccounts(true);
 
 		$this->assertEquals(204, $response->getStatusCode());
-		$this->assertEmpty($accounts);
+		$this->assertArrayNotHasKey('test', $accounts);
 	}
 
 	/**
