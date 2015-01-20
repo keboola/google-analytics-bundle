@@ -170,7 +170,7 @@ class Extractor
 				} catch (RequestException $e) {
 
 					if ($e->getCode() == 401) {
-						throw new UserException("Expried or wrong credentials, please reauthorize.", $e);
+						throw new UserException("Expired or wrong credentials, please reauthorize.", $e);
 					}
 
 					if ($e->getCode() == 403) {
@@ -182,6 +182,10 @@ class Extractor
 						} else {
 							throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
 						}
+					}
+
+					if ($e->getCode() == 400) {
+						throw new UserException($e->getMessage());
 					}
 
 					throw new ApplicationException($e->getResponse()->getBody(), $e);
