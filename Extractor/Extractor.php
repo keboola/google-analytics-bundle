@@ -126,7 +126,12 @@ class Extractor
 				$this->configuration->initDataBucket($account->getAccountId());
 			} else {
 				if (!$this->configuration->getStorageApi()->bucketExists($account->getAttribute('outputBucket'))) {
-					throw new ConfigurationException("Output bucket '".$account->getAttribute('outputBucket')."' doesn't exist.");
+					$outBucketArr = explode('.', $account->getAttribute('outputBucket'));
+					$this->configuration->getStorageApi()->createBucket(
+						str_replace('c-', '', $outBucketArr[1]),
+						$outBucketArr[0],
+						'Google Analytics data bucket'
+					);
 				}
 			}
 
