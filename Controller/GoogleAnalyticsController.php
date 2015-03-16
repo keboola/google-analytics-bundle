@@ -236,7 +236,18 @@ class GoogleAnalyticsController extends ApiController
 			if (!isset($account->toArray()['items'][0]['accountName'])
 				|| empty($account->toArray()['items'][0]['accountName']))
 			{
-				$profiles = $this->getApi($account)->getAllProfiles();
+                try {
+                    $profiles = $this->getApi($account)->getAllProfiles();
+                } catch (RequestException $e) {
+                    $userException = new UserException($e->getMessage(), $e);
+                    $userException->setData([
+                        'code' => $e->getResponse()->getStatusCode(),
+                        'message' => $e->getMessage(),
+                        'reason' => $e->getResponse()->getReasonPhrase(),
+                        'body' => $e->getResponse()->getBody()
+                    ]);
+                    throw $userException;
+                }
 
 				foreach ($account->getData() as $row) {
 
