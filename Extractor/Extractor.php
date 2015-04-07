@@ -193,6 +193,10 @@ class Extractor
 						throw new UserException($e->getMessage());
 					}
 
+                    if ($e->getCode() == 503) {
+                        throw new UserException("Google API error: " . $e->getMessage(), $e);
+                    }
+
 					throw new ApplicationException($e->getResponse()->getBody(), $e);
 				}
 			}
@@ -228,6 +232,14 @@ class Extractor
 		$filters = (isset($cfg['filters'][0]))?$cfg['filters'][0]:null;
 
 		$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'], $filters, $dateFrom, $dateTo);
+
+		$this->logger->info("Extracting ...", [
+			'dimensions' => $cfg['dimensions'],
+			'metrics' => $cfg['metrics'],
+			'dateFrom' => $dateFrom,
+			'dateTo' => $dateTo,
+			'results' => count($resultSet)
+		]);
 
 		if (empty($resultSet)) {
 			return;

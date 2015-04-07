@@ -326,6 +326,6 @@ class ExtractorTest extends WebTestCase
 
 	public function testRun()
 	{
-		//@TODO
+
 	}
 }
