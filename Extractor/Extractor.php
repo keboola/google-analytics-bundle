@@ -53,11 +53,18 @@ class Extractor
 
 	public function getBackoffCallback403()
 	{
-		/** @var Response $response */
 		return function ($response) {
+            /** @var Response $response */
 			$reason = $response->getReasonPhrase();
 
-			return ($reason == 'userRateLimitExceeded' || $reason == 'quotaExceeded');
+            if ($reason == 'insufficientPermissions'
+                || $reason == 'dailyLimitExceeded'
+                || $reason == 'usageLimits.userRateLimitExceededUnreg')
+            {
+                return false;
+            }
+
+			return true;
 		};
 	}
 

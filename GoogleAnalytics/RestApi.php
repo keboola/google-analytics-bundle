@@ -93,6 +93,7 @@ class RestApi
 		$parameters['max-results'] = $maxResults;
 		$parameters['prettyprint'] = true;
 		$parameters['samplingLevel'] = 'HIGHER_PRECISION';
+//        $parameters['quotaUser'] = $profileId;
 
 		$response = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'), $parameters);
 
@@ -116,7 +117,7 @@ class RestApi
 	{
 		$params = array(
 			'start-index' => $startIndex,
-			'max-results'	=> $maxResults
+			'max-results' => $maxResults
 		);
 
 		$response = $this->api->request(self::ACCOUNTS_URL, 'GET', $params);
@@ -140,7 +141,8 @@ class RestApi
 	{
 		$params = array(
 			'start-index' => $startIndex,
-			'max-results'	=> $maxResults
+			'max-results' => $maxResults,
+            'quotaUser' => $accountId
 		);
 		$url = self::ACCOUNTS_URL . '/' . $accountId . '/webproperties';
 		$response = $this->api->request($url, 'GET', $params);
@@ -161,11 +163,12 @@ class RestApi
 	 * @param int $maxResults
 	 * @return array
 	 */
-	public function getProfiles($accountId, $webpropertyId, $startIndex=1, $maxResults=1000)
+	public function getProfiles($accountId, $webpropertyId, $startIndex=1, $maxResults=5000)
 	{
 		$params = array(
 			'start-index' => $startIndex,
-			'max-results'	=> $maxResults
+			'max-results' => $maxResults,
+            'quotaUser' => $accountId
 		);
 
 		$url = self::ACCOUNTS_URL . '/'	. $accountId . '/webproperties/' . $webpropertyId . '/profiles';
@@ -194,6 +197,7 @@ class RestApi
 			if ($accountId != null && $account['id'] != $accountId) {
 				continue;
 			}
+
 			$webProperties[$account['name']] = $this->getWebProperties($account['id']);
 		}
 
