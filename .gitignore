@@ -1,3 +1,4 @@
+parameters.yml
 scripts/debug.php
 *.log
 .idea
@@ -10,5 +11,3 @@ tmp
 # osx noise
 .DS_Store
 profile
-parameters.yml
-parameters_shared.yml
