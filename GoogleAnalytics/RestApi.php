@@ -78,6 +78,8 @@ class RestApi
 			}
 		}
 
+        var_dump($filter);
+
 		if ($startDate == null) {
 			$startDate=date('Y-m-d',strtotime('1 month ago'));
 		}
@@ -287,7 +289,7 @@ class RestApi
 		$validOperators = '(!~|=~|==|!=|>|<|>=|<=|=@|!@)';
 
 		$filter = preg_replace('/\s\s+/',' ',trim($filter)); //Clean duplicate whitespace
-		$filter = str_replace(array(',',';'),array('\,','\;'),$filter); //Escape Google Analytics reserved characters
+//		$filter = str_replace(array(',',';'),array('\,','\;'),$filter); //Escape Google Analytics reserved characters
 		$filter = preg_replace('/(&&\s*|\|\|\s*|^)([a-z]+)(\s*' . $validOperators . ')/i','$1ga:$2$3',$filter); //Prefix ga: to metrics and dimensions
 		$filter = preg_replace('/[\'\"]/i','',$filter); //Clear invalid quote characters
 		$filter = preg_replace(array('/\s*&&\s*/','/\s*\|\|\s*/','/\s*' . $validOperators . '\s*/'),array(';',',','$1'),$filter); //Clean up operators
