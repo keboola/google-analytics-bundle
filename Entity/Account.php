@@ -258,7 +258,8 @@ class Account extends Table
 	public function toArray()
 	{
 		$attributes = $this->getAttributes();
-		$attributes['configuration'] = $this->getConfiguration();
+        $configuration = $this->getConfiguration();
+		$attributes['configuration'] = empty($configuration)?json_decode('{}'):$configuration;
 		$array = array_merge(
 			$attributes,
 			array(
