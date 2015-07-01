@@ -8,8 +8,7 @@
 
 namespace Keboola\Google\AnalyticsBundle\Exception;
 
-
-use Syrup\ComponentBundle\Exception\UserException;
+use Keboola\Syrup\Exception\UserException;
 
 class ParameterMissingException extends UserException
 {

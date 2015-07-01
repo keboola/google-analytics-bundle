@@ -8,19 +8,16 @@
 
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
-use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Message\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
-use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
-use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Monolog\Logger;
-use Syrup\ComponentBundle\Exception\ApplicationException;
-use Syrup\ComponentBundle\Exception\UserException;
-use Syrup\ComponentBundle\Filesystem\Temp;
+use Keboola\Syrup\Exception\ApplicationException;
+use Keboola\Syrup\Exception\UserException;
+use Keboola\Temp\Temp;
 
 class Extractor
 {

@@ -8,7 +8,6 @@
 
 namespace Keboola\Google\AnalyticsBundle\GoogleAnalytics;
 
-
 class Result
 {
 	private $metrics = array();

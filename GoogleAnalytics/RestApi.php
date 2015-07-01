@@ -8,7 +8,6 @@
 
 namespace Keboola\Google\AnalyticsBundle\GoogleAnalytics;
 
-use Guzzle\Http\Message\Request;
 use GuzzleHttp\Exception\RequestException;
 use Keboola\Google\ClientBundle\Google\RestApi as GoogleApi;
 
@@ -78,8 +77,6 @@ class RestApi
 			}
 		}
 
-        var_dump($filter);
-
 		if ($startDate == null) {
 			$startDate=date('Y-m-d',strtotime('1 month ago'));
 		}
@@ -95,6 +92,7 @@ class RestApi
 		$parameters['max-results'] = $maxResults;
 		$parameters['prettyprint'] = true;
 		$parameters['samplingLevel'] = 'HIGHER_PRECISION';
+        $parameters['output'] = 'json';
 //        $parameters['quotaUser'] = $profileId;
 
 		$response = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'), $parameters);

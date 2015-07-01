@@ -18,8 +18,8 @@ use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Keboola\Google\AnalyticsBundle\Mailer\Mailer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Syrup\ComponentBundle\Controller\ApiController;
-use Syrup\ComponentBundle\Exception\UserException;
+use Keboola\Syrup\Controller\ApiController;
+use Keboola\Syrup\Exception\UserException;
 
 class GoogleAnalyticsController extends ApiController
 {

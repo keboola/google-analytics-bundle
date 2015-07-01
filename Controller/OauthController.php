@@ -7,7 +7,6 @@
 
 namespace Keboola\Google\AnalyticsBundle\Controller;
 
-
 use Keboola\Encryption\EncryptorInterface;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Exception\ConfigurationException;
@@ -19,13 +18,11 @@ use Keboola\StorageApi\ClientException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Attribute\AttributeBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Syrup\ComponentBundle\Controller\BaseController;
-use Syrup\ComponentBundle\Exception\ApplicationException;
-use Syrup\ComponentBundle\Exception\UserException;
+use Keboola\Syrup\Controller\BaseController;
+use Keboola\Syrup\Exception\ApplicationException;
+use Keboola\Syrup\Exception\UserException;
 
 class OauthController extends BaseController
 {

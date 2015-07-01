@@ -7,11 +7,10 @@
 
 namespace Keboola\Google\AnalyticsBundle\Job;
 
-
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\Extractor\Extractor;
-use Syrup\ComponentBundle\Job\Executor as BaseExecutor;
-use Syrup\ComponentBundle\Job\Metadata\Job;
+use Keboola\Syrup\Job\Executor as BaseExecutor;
+use Keboola\Syrup\Job\Metadata\Job;
 
 class Executor extends BaseExecutor
 {

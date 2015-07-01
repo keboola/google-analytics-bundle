@@ -10,12 +10,11 @@ namespace Keboola\Google\AnalyticsBundle\Extractor;
 
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
-use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\Result;
 use Keboola\StorageApi\ClientException;
 use Keboola\StorageApi\Table;
-use Syrup\ComponentBundle\Exception\UserException;
-use Syrup\ComponentBundle\Filesystem\Temp;
+use Keboola\Syrup\Exception\UserException;
+use Keboola\Temp\Temp;
 
 class DataManager
 {

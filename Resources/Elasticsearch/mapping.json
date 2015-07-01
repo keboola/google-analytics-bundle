@@ -1,0 +1,22 @@
+{
+	"params": {
+		"dynamic": "strict",
+		"properties": {
+			"account": {
+				"type": "string"
+			},
+			"config": {
+				"type": "string"
+			},
+			"dataset": {
+				"type": "string"
+			},
+			"since": {
+				"type": "string"
+			},
+			"until": {
+				"type": "string"
+			}
+		}
+	}
+}

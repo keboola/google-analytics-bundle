@@ -17,21 +17,20 @@
     ],
     "require": {
 		"keboola/google-client-bundle": "~2.0.1",
-        "syrup/component-bundle": "~1.10.0",
-        "symfony/symfony": "~2.5.9"
+        "keboola/syrup": "~2.3"
     },
     "require-dev": {
 		"phpunit/phpunit": "3.7.*"
     },
     "scripts": {
         "post-install-cmd": [
-            "Syrup\\CoreBundle\\DeploymentHandler\\ScriptHandler::getParameters",
-            "Syrup\\CoreBundle\\DeploymentHandler\\ScriptHandler::getSharedParameters",
+            "Keboola\\Syrup\\DeploymentHandler\\ScriptHandler::getParameters",
+            "Keboola\\Syrup\\DeploymentHandler\\ScriptHandler::getSharedParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap"
         ],
         "post-update-cmd": [
-            "Syrup\\CoreBundle\\DeploymentHandler\\ScriptHandler::getParameters",
-            "Syrup\\CoreBundle\\DeploymentHandler\\ScriptHandler::getSharedParameters",
+            "Keboola\\Syrup\\DeploymentHandler\\ScriptHandler::getParameters",
+            "Keboola\\Syrup\\DeploymentHandler\\ScriptHandler::getSharedParameters",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache"
         ]
