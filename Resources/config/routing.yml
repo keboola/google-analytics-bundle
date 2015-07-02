@@ -12,6 +12,7 @@ keboola_google_analytics_oauth:
 keboola_google_analytics_oauth_callback:
     path: /oauth-callback
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:Oauth:oauthCallback }
+    schemes:  [https]
 
 # External Auth
 keboola_google_analytics_post_external_auth_link:
