@@ -234,8 +234,17 @@ class Extractor
 		$cfg = $config[$tableName];
 
 		$filters = (isset($cfg['filters'][0]))?$cfg['filters'][0]:null;
+        $segment = isset($cfg['segment'])?$cfg['segment']:null;
 
-		$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'], $filters, $dateFrom, $dateTo);
+		$resultSet = $this->gaApi->getData(
+            $profile->getGoogleId(),
+            $cfg['dimensions'],
+            $cfg['metrics'],
+            $filters,
+            $segment,
+            $dateFrom,
+            $dateTo
+        );
 
 		$this->logger->info("Extracting ...", [
 			'dimensions' => $cfg['dimensions'],
@@ -254,15 +263,26 @@ class Extractor
 
 		// Paging
 		$params = $this->gaApi->getDataParameters();
-		if ($params['totalResults'] > $params['itemsPerPage']) {
 
+		if ($params['totalResults'] > $params['itemsPerPage']) {
 			$pages = ceil($params['totalResults'] / $params['itemsPerPage']);
+
 			for ($i=1; $i<$pages; $i++) {
 				$start = $i*$params['itemsPerPage']+1;
 				$end = $start+$params['itemsPerPage']-1;
 
-				$resultSet = $this->gaApi->getData($profile->getGoogleId(), $cfg['dimensions'], $cfg['metrics'],
-					$filters, $dateFrom, $dateTo, 'ga:date', $start, $params['itemsPerPage']);
+				$resultSet = $this->gaApi->getData(
+                    $profile->getGoogleId(),
+                    $cfg['dimensions'],
+                    $cfg['metrics'],
+					$filters,
+                    $segment,
+                    $dateFrom,
+                    $dateTo,
+                    'ga:date',
+                    $start,
+                    $params['itemsPerPage']
+                );
 
 				$this->getDataManager()->saveToCsv($resultSet, $profile, $csv, true);
 			}

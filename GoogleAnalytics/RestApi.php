@@ -40,7 +40,7 @@ class RestApi
 		return $this->dataParameters;
 	}
 
-	public function getData($profileId, $dimensions, $metrics, $filter = null,
+	public function getData($profileId, $dimensions, $metrics, $filter = null, $segment = null,
         $startDate = null, $endDate = null, $sort = 'ga:date', $startIndex = 1, $maxResults = 5000)
 	{
 		$parameters = array('ids'=>'ga:' . $profileId);
@@ -58,7 +58,7 @@ class RestApi
 			$parameters['dimensions'] = 'ga:'.$dimensions;
 		}
 
-		if(is_array($metrics)) {
+		if (is_array($metrics)) {
 			$metricsString = '';
 
 			foreach($metrics as $metric) {
@@ -72,13 +72,17 @@ class RestApi
 		if ($filter != null) {
 			$filter = $this->processFilter($filter);
 
-			if($filter !== false) {
+			if ($filter !== false) {
 				$parameters['filters'] = $filter;
 			}
 		}
 
+        if ($segment != null) {
+            $parameters['segment'] = $segment;
+        }
+
 		if ($startDate == null) {
-			$startDate=date('Y-m-d',strtotime('1 month ago'));
+			$startDate = date('Y-m-d',strtotime('1 month ago'));
 		}
 
 		$parameters['start-date'] = $startDate;
