@@ -190,11 +190,18 @@ class ExtractorTest extends WebTestCase
 			array(),
 			array(),
 			json_encode(array(
-				'googleId'  => '123456',
-				'googleName'      => 'googleTestAccount',
-				'email'     => 'test@keboola.com',
-				'accessToken'   => 'accessToken',
-				'refreshToken'  => 'refreshToken'
+				'googleId' => '123456',
+				'googleName' => 'googleTestAccount',
+				'email' => 'test@keboola.com',
+				'accessToken' => 'accessToken',
+				'refreshToken' => 'refreshToken',
+				'configuration' => [
+                    'New Users' => [
+                        'name' => 'New Users',
+                        'metrics' => ['users'],
+                        'dimensions' => []
+                    ]
+                ]
 			))
 		);
 
@@ -205,6 +212,9 @@ class ExtractorTest extends WebTestCase
 
 		$accounts = $this->configuration->getAccounts(true);
 		$account = $accounts['test'];
+
+        $this->assertArrayHasKey('new-users', $account['configuration']);
+        $this->assertEquals('new-users', $account['configuration']['new-users']['name']);
 
 		$this->assertAccount($account);
 	}

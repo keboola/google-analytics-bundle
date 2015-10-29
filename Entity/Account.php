@@ -165,6 +165,14 @@ class Account extends Table
 
 	public function setConfiguration($config)
 	{
+		// make sure configuration table names are lowercase and without spaces
+        foreach ($config as $k => $v) {
+            unset($config[$k]);
+            $name = strtolower(preg_replace('/\s+/', '-', $k));
+            $v['name'] = $name;
+            $config[$name] = $v;
+        }
+
 		$this->setAttribute('configuration', json_encode($config));
 
 		return $this;

@@ -186,7 +186,7 @@ class Extractor
 						$url = $e->getResponse()->getEffectiveUrl();
 
 						if (strtolower($e->getResponse()->getReasonPhrase()) == 'forbidden') {
-							$this->logger->warn("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.");
+							$this->logger->warning("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.");
 							continue;
 						} else {
 							throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
