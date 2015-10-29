@@ -165,10 +165,10 @@ class Account extends Table
 
 	public function setConfiguration($config)
 	{
-		// make sure configuration table names are lowercase and without spaces
+		// make sure configuration table names are without spaces
         foreach ($config as $k => $v) {
             unset($config[$k]);
-            $name = strtolower(preg_replace('/\s+/', '-', $k));
+            $name = preg_replace('/\s+/', '-', $k);
             $v['name'] = $name;
             $config[$name] = $v;
         }

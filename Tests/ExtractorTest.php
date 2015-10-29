@@ -213,8 +213,8 @@ class ExtractorTest extends WebTestCase
 		$accounts = $this->configuration->getAccounts(true);
 		$account = $accounts['test'];
 
-        $this->assertArrayHasKey('new-users', $account['configuration']);
-        $this->assertEquals('new-users', $account['configuration']['new-users']['name']);
+        $this->assertArrayHasKey('New-Users', $account['configuration']);
+        $this->assertEquals('New-Users', $account['configuration']['New-Users']['name']);
 
 		$this->assertAccount($account);
 	}
