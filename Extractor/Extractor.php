@@ -255,6 +255,11 @@ class Extractor
 		]);
 
 		if (empty($resultSet)) {
+			$this->logger->warning("Query returned empty result", [
+				'account' => $account->getAccountName(),
+				'profile' => $profile->getName(),
+				'outputTable' => $tableName
+			]);
 			return;
 		}
 
