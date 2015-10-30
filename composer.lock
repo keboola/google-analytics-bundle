@@ -1420,12 +1420,12 @@
         },
         {
             "name": "keboola/google-client-bundle",
-            "version": "3.0.0",
+            "version": "3.0.2",
             "target-dir": "Keboola/Google/ClientBundle",
             "source": {
                 "type": "git",
                 "url": "git@bitbucket.org:keboola/google-client-bundle.git",
-                "reference": "16e1bcde926f8d78f65d5c92c60c35936d709c45"
+                "reference": "f63c1eb9be3f8d411a3a69d04f1480d89bf4af99"
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.0",
@@ -1453,7 +1453,7 @@
                 "keboola",
                 "rest"
             ],
-            "time": "2015-10-30 13:01:26"
+            "time": "2015-10-30 14:16:39"
         },
         {
             "name": "keboola/php-encryption",
