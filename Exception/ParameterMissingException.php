@@ -16,5 +16,4 @@ class ParameterMissingException extends UserException
 	{
 		parent::__construct($message);
 	}
-
 }

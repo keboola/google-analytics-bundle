@@ -9,7 +9,6 @@
 namespace Keboola\Google\AnalyticsBundle\Extractor;
 
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\Response;
 use Keboola\Csv\CsvFile;
 use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Entity\Profile;
@@ -18,6 +17,7 @@ use Monolog\Logger;
 use Keboola\Syrup\Exception\ApplicationException;
 use Keboola\Syrup\Exception\UserException;
 use Keboola\Temp\Temp;
+use Psr\Http\Message\ResponseInterface;
 
 class Extractor
 {
@@ -51,7 +51,7 @@ class Extractor
 	public function getBackoffCallback403()
 	{
 		return function ($response) {
-            /** @var Response $response */
+            /** @var ResponseInterface $response */
 			$reason = $response->getReasonPhrase();
 
             if ($reason == 'insufficientPermissions'
@@ -183,10 +183,8 @@ class Extractor
 					}
 
 					if ($e->getCode() == 403) {
-						$url = $e->getResponse()->getEffectiveUrl();
-
 						if (strtolower($e->getResponse()->getReasonPhrase()) == 'forbidden') {
-							$this->logger->warning("You don't have access to Google Analytics resource '".$url."'. Probably you don't have access to profile, or profile doesn't exists anymore.");
+							$this->logger->warning("You don't have access to Google Analytics resource. Probably you don't have access to profile, or profile doesn't exists anymore.");
 							continue;
 						} else {
 							throw new UserException("Reason: " . $e->getResponse()->getReasonPhrase(), $e);
@@ -274,7 +272,6 @@ class Extractor
 
 			for ($i=1; $i<$pages; $i++) {
 				$start = $i*$params['itemsPerPage']+1;
-				$end = $start+$params['itemsPerPage']-1;
 
 				$resultSet = $this->gaApi->getData(
                     $profile->getGoogleId(),

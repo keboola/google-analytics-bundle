@@ -344,7 +344,7 @@ class GoogleAnalyticsController extends ApiController
 		try {
 			$profiles = $this->getApi($account)->getAllProfiles();
 		} catch (RequestException $e) {
-			throw new UserException("You don't have access to resource: " . $e->getResponse()->getEffectiveUrl(), $e);
+			throw new UserException("You don't have access to resource", $e);
 		}
 
 		return $this->createJsonResponse($profiles);

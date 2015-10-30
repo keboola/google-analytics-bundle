@@ -8,8 +8,6 @@
 
 namespace Keboola\Google\AnalyticsBundle\Entity;
 
-
-use Keboola\Google\AnalyticsBundle\Entity\Account;
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 
 class AccountFactory
@@ -25,5 +23,4 @@ class AccountFactory
 	{
 		return new Account($this->configuration, $accountId);
 	}
-
 }

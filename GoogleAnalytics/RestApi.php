@@ -101,7 +101,7 @@ class RestApi
 
 		$response = $this->api->request(self::DATA_URL, 'GET', array('Accept' => 'application/json'), $parameters);
 
-		$result = $this->_mapDataResult($response->json());
+		$result = $this->_mapDataResult(json_decode($response, true));
 
 		if ($result != false) {
 			return $result;
@@ -125,8 +125,7 @@ class RestApi
 		);
 
 		$response = $this->api->request(self::ACCOUNTS_URL, 'GET', $params);
-
-		$result = $response->json();
+		$result = json_decode($response, true);
 
 		if (isset($result['items'])) {
 			return $result['items'];
@@ -151,7 +150,7 @@ class RestApi
 		$url = self::ACCOUNTS_URL . '/' . $accountId . '/webproperties';
 		$response = $this->api->request($url, 'GET', $params);
 
-		$result = $response->json();
+		$result = json_decode($response, true);
 
 		if (isset($result['items'])) {
 			return $result['items'];
@@ -178,7 +177,7 @@ class RestApi
 		$url = self::ACCOUNTS_URL . '/'	. $accountId . '/webproperties/' . $webpropertyId . '/profiles';
 		$response = $this->api->request($url, 'GET', $params);
 
-		$result = $response->json();
+		$result = json_decode($response, true);
 
 		if (isset($result['items'])) {
 			return $result['items'];
