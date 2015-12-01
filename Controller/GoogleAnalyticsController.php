@@ -16,6 +16,8 @@ use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\Google\AnalyticsBundle\Extractor\Extractor;
 use Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi;
 use Keboola\Google\AnalyticsBundle\Mailer\Mailer;
+use Keboola\Syrup\Elasticsearch\JobMapper;
+use Keboola\Syrup\Exception\ApplicationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Keboola\Syrup\Controller\ApiController;
@@ -73,6 +75,58 @@ class GoogleAnalyticsController extends ApiController
 
 		return $gaApi;
 	}
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @throws ApplicationException
+     */
+    public function runAction(Request $request)
+    {
+        // Get params from request
+        $params = $this->getPostJson($request);
+
+        // check params against ES mapping
+        $this->checkMappingParams($params);
+
+        // Create new job
+        $job = $this->createJob('run', $params);
+
+        // allow parallel processing of various configs
+        if (isset($params['config'])) {
+            $job->setLockName($job->getLockName() . '-' . $params['config']);
+        }
+
+        // Add job to Elasticsearch
+        try {
+            /** @var JobMapper $jobMapper */
+            $jobMapper = $this->container->get('syrup.elasticsearch.current_component_job_mapper');
+            $jobId = $jobMapper->create($job);
+        } catch (\Exception $e) {
+            throw new ApplicationException("Failed to create job", $e);
+        }
+
+        // Add job to SQS
+        $queueName = 'default';
+        $queueParams = $this->container->getParameter('queue');
+
+        if (isset($queueParams['sqs'])) {
+            $queueName = $queueParams['sqs'];
+        }
+        $messageId = $this->enqueue($jobId, $queueName);
+
+        $this->logger->info('Job created', [
+            'sqsQueue' => $queueName,
+            'sqsMessageId' => $messageId,
+            'job' => $job->getLogData()
+        ]);
+
+        $jobResource = $job->getLogData();
+        $jobResource['url'] = $this->getJobUrl($jobId);
+
+        // Response with link to job resource
+        return $this->createJsonResponse($jobResource, 202);
+    }
 
 	/** External Authorization */
 
