@@ -2,6 +2,11 @@
 #    pattern:  /hello/{name}
 #    defaults: { _controller: KeboolaGoogleAnalyticsBundle:Default:index }
 
+# Run
+keboola_ex_google_analytics_run:
+    path: /run
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:run }
+    methods:  [POST]
 
 # OAuth
 keboola_google_analytics_oauth:

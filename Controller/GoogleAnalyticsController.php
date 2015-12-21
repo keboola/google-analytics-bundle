@@ -93,9 +93,9 @@ class GoogleAnalyticsController extends ApiController
         $job = $this->createJob('run', $params);
 
         // allow parallel processing of various configs
-        if (isset($params['config'])) {
+        if (!empty($params['config'])) {
             $job->setLockName($job->getLockName() . '-' . $params['config']);
-        } 
+        }
 
         // Add job to Elasticsearch
         try {
