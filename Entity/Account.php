@@ -10,6 +10,7 @@ namespace Keboola\Google\AnalyticsBundle\Entity;
 
 use Keboola\Google\AnalyticsBundle\Extractor\Configuration;
 use Keboola\StorageApi\Table;
+use Keboola\Syrup\Exception\UserException;
 
 class Account extends Table
 {
@@ -165,17 +166,29 @@ class Account extends Table
 
 	public function setConfiguration($config)
 	{
-		// make sure configuration table names are without spaces
+		// make sure configuration table names are without special chars, spaces are replaced with "-"
         foreach ($config as $k => $v) {
-            unset($config[$k]);
-            $name = preg_replace('/\s+/', '-', $k);
-            $v['name'] = $name;
-            $config[$name] = $v;
+			$this->validateQueryName($k);
+            $v['name'] = $k;
         }
 
 		$this->setAttribute('configuration', json_encode($config));
 
 		return $this;
+	}
+
+	public function validateQueryName($name)
+	{
+		$sanitize = function($string) {
+			$string = preg_replace("/[^A-Za-z0-9_\-\s]/", '', $string);
+			$string = trim($string);
+			$string = str_replace(' ', '_', $string);
+			return $string;
+		};
+
+		if ($sanitize($name) != $name) {
+			throw new UserException("Query name contains special characters. It can only contain alphanumeric characters and '_'. For example 'New_Users_1'.");
+		}
 	}
 
 	public function setOwner($owner)

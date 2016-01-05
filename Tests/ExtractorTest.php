@@ -196,8 +196,8 @@ class ExtractorTest extends WebTestCase
 				'accessToken' => 'accessToken',
 				'refreshToken' => 'refreshToken',
 				'configuration' => [
-                    'New Users' => [
-                        'name' => 'New Users',
+                    'New-Users' => [
+                        'name' => 'New-Users',
                         'metrics' => ['users'],
                         'dimensions' => []
                     ]
