@@ -187,7 +187,13 @@ class Account extends Table
 		};
 
 		if ($sanitize($name) != $name) {
-			throw new UserException("Query name contains special characters. It can only contain alphanumeric characters and '_'. For example 'New_Users_1'.");
+			throw new UserException(
+				sprintf(
+					"Query name '%s' contains special characters.
+					It can only contain alphanumeric characters and '_'.
+					For example 'New_Users_1'.",
+					$name
+				));
 		}
 	}
 
