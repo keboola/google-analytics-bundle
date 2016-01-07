@@ -9,12 +9,7 @@
             "email": "miro@keboola.com"
         }
     ],
-    "repositories": [
-		{
-            "type": "vcs",
-    		"url": "git@bitbucket.org:keboola/google-client-bundle.git"
-		}
-    ],
+    "repositories": [],
     "require": {
 		"keboola/google-client-bundle": "^3.0",
         "keboola/syrup": "^2.5"
