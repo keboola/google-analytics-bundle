@@ -3,7 +3,7 @@ services:
         class: Keboola\Google\AnalyticsBundle\GoogleAnalytics\RestApi
         arguments: [@google_rest_api]
 
-    ex_google_analytics.job_executor:
+    syrup.job_executor:
         class: Keboola\Google\AnalyticsBundle\Job\Executor
         arguments: [@ex_google_analytics.configuration, @ex_google_analytics.extractor]
 
