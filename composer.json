@@ -12,7 +12,7 @@
     "repositories": [],
     "require": {
 		"keboola/google-client-bundle": "^3.0",
-        "keboola/syrup": "dev-master as 3.0.0"
+        "keboola/syrup": "^2.5"
     },
     "require-dev": {
 		"phpunit/phpunit": "3.7.*"
