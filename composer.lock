@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dc05ccc83c6245012be566afeb37b0bc",
-    "content-hash": "53f69f3229067d0a7e8b1c3249c858b2",
+    "hash": "4504bfb47e619f48383df502fb1f354c",
+    "content-hash": "b7926295a5b5bdf1f4f5927b439e3530",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1599,16 +1599,16 @@
         },
         {
             "name": "keboola/storage-api-client",
-            "version": "4.0.3",
+            "version": "3.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/storage-api-php-client.git",
-                "reference": "047ec7b6d5d0d166555116cebfd88ea5c858dfae"
+                "reference": "c4af4aee4585573a75281297947301516a18f9d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/047ec7b6d5d0d166555116cebfd88ea5c858dfae",
-                "reference": "047ec7b6d5d0d166555116cebfd88ea5c858dfae",
+                "url": "https://api.github.com/repos/keboola/storage-api-php-client/zipball/c4af4aee4585573a75281297947301516a18f9d4",
+                "reference": "c4af4aee4585573a75281297947301516a18f9d4",
                 "shasum": ""
             },
             "require": {
@@ -1636,20 +1636,20 @@
             ],
             "description": "Keboola Storage API PHP CLient",
             "homepage": "http://keboola.com",
-            "time": "2016-01-07 14:44:05"
+            "time": "2015-12-21 12:21:31"
         },
         {
             "name": "keboola/syrup",
-            "version": "dev-master",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/keboola/syrup.git",
-                "reference": "c4eb2ec72bc1896b148f0950ee44a675da38ada4"
+                "reference": "9cb3ffe93055982632d173d9408d0ec13e96118e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/keboola/syrup/zipball/c4eb2ec72bc1896b148f0950ee44a675da38ada4",
-                "reference": "c4eb2ec72bc1896b148f0950ee44a675da38ada4",
+                "url": "https://api.github.com/repos/keboola/syrup/zipball/9cb3ffe93055982632d173d9408d0ec13e96118e",
+                "reference": "9cb3ffe93055982632d173d9408d0ec13e96118e",
                 "shasum": ""
             },
             "require": {
@@ -1662,7 +1662,7 @@
                 "keboola/csv": "~1.1",
                 "keboola/php-encryption": "~0.2",
                 "keboola/php-temp": "~0.1.0",
-                "keboola/storage-api-client": "^4.0",
+                "keboola/storage-api-client": "~3.0",
                 "php": "~5.6",
                 "sensio/distribution-bundle": "~3.0",
                 "sensio/framework-extra-bundle": "~3.0",
@@ -1670,11 +1670,11 @@
                 "symfony/assetic-bundle": "~2.3",
                 "symfony/monolog-bundle": "~2.6",
                 "symfony/swiftmailer-bundle": "~2.3",
-                "symfony/symfony": "^2.7"
+                "symfony/symfony": "~2.6 >=2.6.5"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "dev-master",
-                "phpunit/phpunit": "^5.0",
+                "phpunit/phpunit": "~4.5",
                 "squizlabs/php_codesniffer": "2.*",
                 "symfony/var-dumper": "~2.6"
             },
@@ -1703,7 +1703,7 @@
                 }
             ],
             "description": "Syrup",
-            "time": "2016-01-15 09:37:07"
+            "time": "2016-01-07 10:26:09"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -3556,18 +3556,9 @@
             "time": "2013-01-13 10:24:48"
         }
     ],
-    "aliases": [
-        {
-            "alias": "3.0.0",
-            "alias_normalized": "3.0.0.0",
-            "version": "9999999-dev",
-            "package": "keboola/syrup"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "keboola/syrup": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
