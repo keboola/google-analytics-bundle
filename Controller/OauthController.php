@@ -136,7 +136,7 @@ class OauthController extends BaseController
 			$tokens = $googleApi->authorize($code, $this->container->get('router')->generate('keboola_google_analytics_oauth_callback', array(), UrlGeneratorInterface::ABSOLUTE_URL));
 
 			$googleApi->setCredentials($tokens['access_token'], $tokens['refresh_token']);
-			$userData = json_decode($googleApi->request('/oauth2/v2/userinfo'), true);
+			$userData = json_decode($googleApi->request('/oauth2/v2/userinfo')->getBody(), true);
 
 			/** @var Account $account */
 			$account = $configuration->getAccountBy('accountId', $accountId);
