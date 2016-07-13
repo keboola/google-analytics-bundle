@@ -337,6 +337,21 @@ class GoogleAnalyticsController extends ApiController
 		return $this->createJsonResponse($account->toArray());
 	}
 
+	public function getAccountDecryptAction($id)
+	{
+		$account = $this->getConfiguration()->getAccountBy('accountId', $id);
+
+		if ($account == null) {
+			throw new UserException("Account '" . $id . "' not found");
+		}
+
+		$accountArr = $account->toArray();
+		$accountArr['refreshToken'] = $account->getRefreshToken();
+		$accountArr['accessToken'] = $account->getAccessToken();
+
+		return $this->createJsonResponse($accountArr);
+	}
+
 	public function getAccountsAction()
 	{
 		return $this->createJsonResponse($this->getConfiguration()->getAccounts(true));

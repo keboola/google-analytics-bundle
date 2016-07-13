@@ -67,6 +67,11 @@ keboola_google_analytics_get_account:
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getAccount }
     methods:  [GET]
 
+keboola_google_analytics_get_account_decrypt:
+    path: /account/{id}/decrypt
+    defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:getAccountDecrypt }
+    methods:  [GET]
+
 keboola_google_analytics_post_account:
     path: /account/{id}
     defaults: { _controller: KeboolaGoogleAnalyticsBundle:GoogleAnalytics:postAccount }

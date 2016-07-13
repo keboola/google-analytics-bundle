@@ -233,6 +233,22 @@ class ExtractorTest extends WebTestCase
 		$this->assertAccount($account);
 	}
 
+	public function testGetAccountDecrypt()
+	{
+		$this->createConfig();
+		$this->createAccount();
+
+		self::$client->request('GET', '/ex-google-analytics/account/test/decrypt');
+
+		/* @var Response $responseJson */
+		$responseJson = self::$client->getResponse()->getContent();
+		$account = json_decode($responseJson, true);
+
+		$this->assertAccount($account);
+		$this->assertEquals('accessToken', $account['accessToken']);
+		$this->assertEquals('refreshToken', $account['refreshToken']);
+	}
+
 	public function testGetAccounts()
 	{
 		$this->createConfig();
